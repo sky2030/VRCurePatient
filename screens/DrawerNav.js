@@ -24,11 +24,11 @@ import PaymentGatway from "./Payment";
 import FamilyDetail from "./FamilyDetail";
 import EnxConferenceScreen from "./EnxConferenceScreen";
 import HomeScreen from "./HomeScreen";
-
+import Reschedule from "./Reschedule"
 //import DoctorBookingStackScreen from '../routes/DoctorBookingStack';
 
 const Drawer = createDrawerNavigator();
-const DrawerStackScreen = ({}) => (
+const DrawerStackScreen = ({ }) => (
   <Drawer.Navigator drawerContent={(props) => <DrawerContent {...props} />}>
     <Drawer.Screen name="HomeDrawer" component={MainTabScreen} />
     <Drawer.Screen name="Contactus" component={SupportScreen} />
@@ -50,6 +50,7 @@ const DrawerStackScreen = ({}) => (
     <Drawer.Screen name="familydetail" component={FamilyDetail} />
     <Drawer.Screen name="EnxConferenceScreen" component={EnxConferenceScreen} />
     <Drawer.Screen name="HospitalHome" component={HomeScreen} />
+    <Drawer.Screen name="Reschedule" component={Reschedule} />
   </Drawer.Navigator>
 );
 

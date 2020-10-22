@@ -61,8 +61,7 @@ export default function ReportRepo({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       key_prefix = ""
-      console.log("Focus report screen  :", route.params)
-      if (route.params && route.params.appointment_id) {
+      if (route.params) {
         key_prefix = route.params.appointment_id
         setAppointment_id(route.params.appointment_id)
         fetchData(route.params.appointment_id)
@@ -186,33 +185,32 @@ export default function ReportRepo({ navigation, route }) {
   };
   return (
     <View style={styles.container}>
-      {
-        appointment_id.length > 0 && <View style={styles.head} >
-          <Text style={styles.titletext}>My Reports</Text>
-          <MaterialIcons
-            name="navigate-before"
-            size={30}
-            onPress={() => navigation.goBack()}
-            style={styles.back}
-          />
-          <Button
-            style={{ position: "absolute", right: 12, alignSelf: "center" }}
-            icon="upload"
-            mode="contained"
-            theme={{
-              colors: {
-                primary: "#4E557C",
-              }
-            }}
-            onPress={() =>
-              navigation.navigate("AddReport", { appointment_id })
+      {/* <View style={styles.head}> */}
 
+      {/* <Text style={styles.titletext}>My Reports</Text> */}
+      {/* <MaterialIcons
+          name="navigate-before"
+          size={30}
+          onPress={() => navigation.goBack()}
+          style={styles.back}
+        /> */}
+      {/* <Button
+          style={{ position: "absolute", right: 12, alignSelf: "center" }}
+          icon="upload"
+          mode="contained"
+          theme={{
+            colors: {
+              primary: "#4E557C",
             }
-          >
-            Upload
-        </Button>
-        </View>
-      }
+          }}
+          onPress={() =>
+            navigation.navigate("AddReport", { appointment_id })
+
+          }
+        >
+          Upload
+        </Button> */}
+      {/* </View> */}
 
       {
         <FlatList
@@ -247,7 +245,7 @@ export default function ReportRepo({ navigation, route }) {
       <TouchableOpacity
         onPress={() => navigation.navigate("AddReport", { appointment_id, report: undefined })}
         style={{
-          position: "absolute", right: 30, bottom: 130,
+          position: "absolute", left: 30, bottom: 50,
           backgroundColor: "#009387", padding: 10, borderRadius: 3
         }}
       >

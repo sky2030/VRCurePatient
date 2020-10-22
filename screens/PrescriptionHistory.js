@@ -36,7 +36,7 @@ export default function PatientHistory({ navigation, route }) {
     fetch(URL, {
       method: "GET",
       headers: { Authorization: userToken },
-      cache: "default",
+
     })
       .then((res) => res.json())
       .then((results) => {
@@ -281,6 +281,8 @@ export default function PatientHistory({ navigation, route }) {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
+
         />
       </View>
 
@@ -292,7 +294,7 @@ export default function PatientHistory({ navigation, route }) {
           renderItem={({ item, index }) => renderItem(item, index)}
           keyExtractor={(item, index) => `${key_prefix}${item.appointment_id}`}
           onMomentumScrollEnd={onScrollEnd}
-          onRefresh={() => {}}
+          onRefresh={() => { }}
           refreshing={loading}
         />
       }
@@ -307,7 +309,7 @@ export default function PatientHistory({ navigation, route }) {
           indicatorStyle={{ borderRadius: 5 }}
           currentIndicatorStyle={{ borderRadius: 5 }}
           indicatorSize={{ width: 8, height: 8 }}
-          // onPageIndicatorPress={this.onItemTap}
+        // onPageIndicatorPress={this.onItemTap}
         />
       )}
       <TouchableOpacity
@@ -356,7 +358,7 @@ const styles = StyleSheet.create({
     fontSize: 21,
     fontWeight: "500",
     textAlign: "center",
-    width: "80%",
+    width: "75%",
   },
 
   presCard: {

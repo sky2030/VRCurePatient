@@ -19,18 +19,22 @@ const screenWidth = Math.round(Dimensions.get("window").width);
 
 const AVALABLE_COLOR = "#3CB371";
 const BOOKED_COLOR = "#2F4F4F";
-const CANCELED_COLOR = "#FA8072";
+const CANCELED_COLOR = "#FA6072";
+const TRANSIENT_COLOR = "#F72";
+const COMPLETED_COLOR = "#0099ff";
 const IS_AVAILABLE = "available";
 const IS_BOOKED = "booked";
 const IS_CANCELED = "canceled";
+const IS_TRANSIENT = "transient";
+const IS_COMPLETED = "completed";
+const NOT_AVAILABLE = "NOT AVAILABLE";
+let startDate = 0;
+let endDate = 0;
 const DoctorBooking = ({ navigation, route }) => {
   // let { deptcode } = route.params.item
   const [slotDate, setslotDate] = useState(moment().format("ll"));
-  let startDate = 0;
-  let endDate = 0;
-  const [Timecolor, setTimecolor] = useState("#D2E0DE");
+  const [loading, setLoading] = useState(true);
   const [Doctor, setDoctor] = useState({});
-  const [hospitalcode, sethospitalcode] = useState("");
   const [isDatePickerAvailable, setDatePickerAvailable] = useState(false);
 
   const [slotsData, setSlotsData] = useState([]);
@@ -47,15 +51,15 @@ const DoctorBooking = ({ navigation, route }) => {
       .then((res) => res.json())
       .then((results) => {
         console.log(JSON.stringify(results));
+        setLoading(false);
         if (results.code == 200) {
           setSlotsData(results.data);
         } else {
           Alert.alert(Alert_Title, results.message);
         }
-
-        // setLoading(false)
       })
       .catch((err) => {
+        setLoading(false);
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
       });
   };
@@ -63,12 +67,16 @@ const DoctorBooking = ({ navigation, route }) => {
   const updateStartEndDate = async (sdate) => {
     startDate = moment(sdate).startOf("day").format("x");
     endDate = moment(sdate).endOf("day").format("x");
-    setslotDate(moment(sdate).startOf("day").format("ll"));
+    var iscurrentDate = moment().isSame(sdate, "day");
+    if (iscurrentDate) {
+      startDate = moment().format("x");
+    }
+    setslotDate(moment(sdate).format("ll"));
   };
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
+      setLoading(true);
       setDoctor(route.params.item);
-      // sethospitalcode(route.params.hospitalcode)
       updateStartEndDate(new Date());
       fetchData();
     });
@@ -77,40 +85,13 @@ const DoctorBooking = ({ navigation, route }) => {
 
   const bookSlot = async (item) => {
     navigation.navigate("payment", { appointment_id: item.id });
-
-    // const userToken = await AsyncStorage.getItem("userToken");
-    // let URL = `${BASE_URL}doctorslots`;
-    // console.log(URL);
-    // fetch(URL, {
-    //   method: "put",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: userToken,
-    //   },
-    //   body: JSON.stringify({
-    //     id: item.id,
-    //     action: "booked",
-    //   }),
-    // })
-    //   .then((res) => res.json())
-    //   .then((results) => {
-    //     console.log(results);
-    //     if (results.code == 200) {
-    //       navigation.navigate("payment", { appointment_id: item.id });
-    //     } else {
-    //       Alert.alert(Alert_Title, results.message);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
-    //   });
   };
 
   const slotPressed = (item, index) => {
     console.log("Slot ", item, index);
-    if (item.status == IS_AVAILABLE) {
+    if (item.status == IS_AVAILABLE || item.status == IS_TRANSIENT) {
       Alert.alert(
-        "Book your slot",
+        "Book your appointment",
         `Would you like to book ${StringFromTime(item.time_millis)} slot ?`,
         [
           {
@@ -133,46 +114,90 @@ const DoctorBooking = ({ navigation, route }) => {
       return BOOKED_COLOR;
     } else if (item == IS_CANCELED) {
       return CANCELED_COLOR;
+    } else if (item == IS_TRANSIENT) {
+      return TRANSIENT_COLOR;
+    } else if (item == IS_COMPLETED) {
+      return COMPLETED_COLOR;
     }
     return AVALABLE_COLOR;
   };
   const handleDatePicker = (date) => {
     updateStartEndDate(date);
     setDatePickerAvailable(false);
+    setLoading(true);
     fetchData();
   };
+  const statusText = (item) => {
+    if (item.status == IS_BOOKED) {
+      if (item.is_your_slots == false) {
+        return NOT_AVAILABLE;
+      }
+    } else if (item.status != IS_AVAILABLE && item.is_your_slots == false) {
+      return NOT_AVAILABLE;
+    }
+
+    return item.status.toUpperCase();
+  };
   const renderItem = (item, index) => {
+    let statusForSlot = statusText(item);
     return (
       <View
         style={{
           width: (screenWidth - 20) / 3,
-          aspectRatio: 1,
-          justifyContent: "center",
+          aspectRatio: 1.3,
+          paddingHorizontal: 5,
+          paddingVertical: 5,
+          // justifyContent: "center",
         }}
       >
         <TouchableOpacity
+          disabled={statusForSlot == NOT_AVAILABLE ? true : false}
           activeOpacity={1}
           onPress={() => slotPressed(item, index)}
           style={{
-            margin: 10,
+            paddingHorizontal: 5,
             backgroundColor: displayBGSlot(item.status),
             flex: 1,
+
             justifyContent: "center",
           }}
         >
-          <Text style={{ alignSelf: "center", fontSize: 13, color: "#eee" }}>
-            {StringFromTime(item.time_millis)}
-          </Text>
-          <Text
+          <View
             style={{
-              alignSelf: "center",
-              fontSize: 14,
-              color: "#eee",
-              marginTop: 6,
+              flex: 0.7,
+              justifyContent: "flex-end",
             }}
           >
-            {item.status.toUpperCase()}
-          </Text>
+            <Text
+              style={{
+                alignSelf: "center",
+                fontSize: 13,
+                color: "#eee",
+              }}
+            >
+              {StringFromTime(item.time_millis)}
+            </Text>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text
+              style={{
+                flex: 1,
+                alignSelf: "center",
+                fontSize: 14,
+                color: "#eee",
+                marginTop: 6,
+                textAlign: "center",
+              }}
+            >
+              {statusForSlot}
+            </Text>
+          </View>
         </TouchableOpacity>
       </View>
     );
@@ -206,6 +231,7 @@ const DoctorBooking = ({ navigation, route }) => {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
       </View>
       {/* <ScrollView> */}
@@ -282,6 +308,8 @@ const DoctorBooking = ({ navigation, route }) => {
           renderItem={({ item, index }) => renderItem(item, index)}
           keyExtractor={(item, index) => item.id}
           numColumns={3}
+          onRefresh={() => fetchData()}
+          refreshing={loading}
         />
       </View>
 

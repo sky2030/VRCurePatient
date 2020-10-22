@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 
 import Profile from "../assets/images/Avatar-icon.png";
 import { Avatar, Title, Caption, Paragraph, Drawer } from "react-native-paper";

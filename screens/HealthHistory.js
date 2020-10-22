@@ -33,6 +33,7 @@ export default function HealthHistory({ navigation }) {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
       </View>
 

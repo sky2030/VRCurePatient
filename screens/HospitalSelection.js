@@ -8,9 +8,10 @@ import {
   Alert,
   FlatList,
   ScrollView,
-  StatusBar,
+  StatusBar, Dimensions
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
+const screenWidth = Math.round(Dimensions.get("window").width);
 
 const HospitalSelection = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -19,22 +20,22 @@ const HospitalSelection = ({ navigation }) => {
   const fetchData = async () => {
     const userToken = await AsyncStorage.getItem("userToken");
     // console.log(userToken)
-    await fetch(`${BASE_URL}hospitals`, {
+    fetch(`${BASE_URL}hospitals`, {
       method: "GET",
       headers: { Authorization: userToken },
     })
       .then((res) => res.json())
       .then((results) => {
         console.log(JSON.stringify(results));
+        setLoading(false);
         if (results.code == 200) {
           setData(results.data);
         } else {
           Alert.alert(Alert_Title, results.message);
         }
-
-        setLoading(false);
       })
       .catch((err) => {
+        setLoading(false);
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
       });
   };
@@ -54,16 +55,23 @@ const HospitalSelection = ({ navigation }) => {
         style={styles.HospitalCard}
         onPress={() => navigation.navigate("HospitalHome", { item })}
       >
-        <View style={styles.drImage}>
-          <Image style={styles.img} source={{ uri: item.picture }} />
+        <View style={{
+          width: screenWidth / 2.7,
+          aspectRatio: 1.2,
+          paddingVertical: 12,
+          paddingLeft: 12,
+          borderRadius: 5,
+        }}>
+          {
+            item.picture != undefined && item.picture.length > 0 && <Image style={styles.img} source={{ uri: item.picture }} />
+          }
         </View>
         <View style={styles.detail}>
           <Text style={styles.headtextNew}>{item.hospitalname} </Text>
-          <Text style={styles.headtext2}>{item.place} </Text>
+          <Text style={styles.headtext2}>{item.place}</Text>
           <Text style={styles.headtext2}>
             {item.city}, {item.state}
           </Text>
-          {/* <Text style={styles.headtext2}> {item.hospitalcode}</Text> */}
           <View style={styles.btnnew}></View>
         </View>
       </TouchableOpacity>
@@ -142,6 +150,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flex: 1,
     marginTop: 10,
+    marginRight: 10
     // justifyContent: "flex-start",
     // alignItems: "flex-start",
     // marginLeft: 20,
@@ -191,6 +200,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 5,
     flex: 1,
+    marginRight: 10
     // marginLeft: 30,
   },
   cardbody: {
@@ -201,18 +211,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#1e1",
   },
 
-  drImage: {
-    paddingLeft: 13,
-    paddingVertical: 13,
-    flex: 0.6,
-    // alignItems: "center",
-    // justifyContent: "center",
-    // backgroundColor: "#1e1"
-  },
+
   detail: {
     marginLeft: 20,
-    alignItems: "center",
-    justifyContent: "center",
+    flex: 1
+    // alignItems: "center",
+    // justifyContent: "center",
     //marginLeft:10,
     // backgroundColor: "#1e1"
   },
@@ -230,19 +234,10 @@ const styles = StyleSheet.create({
     height: 50,
   },
   img: {
-    aspectRatio: 1,
-    borderRadius: 5,
+
     flex: 1,
-    // marginLeft: 10, marginVertical: 10
-    // width: 120,
-    // height: 120,
-    // marginTop: 7,
-    // //borderBottomEndRadius:30,
-    // borderBottomLeftRadius: 30,
-    // borderBottomRightRadius: 30,
-    // //borderTopEndRadius:30,
-    // borderTopLeftRadius: 30,
-    // borderTopRightRadius: 30,
+    borderRadius: 5,
+
   },
 });
 

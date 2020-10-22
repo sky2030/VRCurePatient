@@ -22,8 +22,8 @@ export default function DoctorSelection({ navigation, route }) {
 
   const fetchData = async () => {
     await setdeptcode(route.params.item.deptcode);
-    await sethospitalName(route.params.hospitalName);
-    await sethospitalcode(route.params.hospitalcode);
+    await sethospitalName(route.params.hospital.hospitalname);
+    await sethospitalcode(route.params.hospital.hospitalcode);
     const userToken = await AsyncStorage.getItem("userToken");
     // console.log(userToken)
     fetch(
@@ -123,6 +123,7 @@ export default function DoctorSelection({ navigation, route }) {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
       </View>
 

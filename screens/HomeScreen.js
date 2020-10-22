@@ -8,8 +8,12 @@ import {
   ImageBackground,
   StatusBar,
   Alert,
+  FlatList,
+  Dimensions,
 } from "react-native";
 import Header from "../assets/images/Header.png";
+import PageControl from "react-native-page-control";
+
 import AsyncStorage from "@react-native-community/async-storage";
 import {
   Fontisto,
@@ -17,13 +21,15 @@ import {
   MaterialIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
+const screenWidth = Math.round(Dimensions.get("window").width);
 
 const HomeScreen = ({ navigation, route }) => {
-  const [item, setHdata] = useState({});
+  const [item, setHdata] = useState([]);
   const [hospitalcode, sethospitalcode] = useState("");
   const [hospitalName, sethospitalName] = useState("");
   const [data, Setdata] = useState({});
   const [loading, setLoading] = useState(true);
+  const [currentPage, setcurrentPage] = useState(0);
 
   const GetProfile = async () => {
     const userToken = await AsyncStorage.getItem("userToken");
@@ -34,19 +40,21 @@ const HomeScreen = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((results) => {
+        setLoading(false);
         if (results.code == 200) {
           Setdata(results.data);
-          setLoading(false);
         } else {
           Alert.alert(Alert_Title, results.message);
         }
       })
       .catch((err) => {
+        setLoading(false);
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
       });
   };
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
+      setLoading(true);
       GetProfile();
       setHdata(route.params.item);
       // sethospitalcode(route.params.item.hospitalcode);
@@ -56,7 +64,49 @@ const HomeScreen = ({ navigation, route }) => {
 
     return unsubscribe;
   }, [route.params.item]);
+  const onScrollEnd = (e) => {
+    let contentOffset = e.nativeEvent.contentOffset;
+    let viewSize = e.nativeEvent.layoutMeasurement;
 
+    // Divide the horizontal offset by the width of the view to see which page is visible
+    let pageNum = Math.floor(contentOffset.x / viewSize.width);
+    // console.log('scrolled to page ', pageNum);
+    setcurrentPage(pageNum);
+  };
+  const renderListSpecialization = (item) => {
+    // console.log("url :", `${BASE}${item.picture.url}`)
+    return (
+      <TouchableOpacity
+        activeOpacity={0.95}
+        style={{ width: screenWidth, flexDirection: "row" }}
+        // onPress={() => navigation.navigate("HospitalHome", { item })}
+      >
+        <View>
+          <Image
+            style={{
+              height: 100,
+              width: 150,
+              marginLeft: 20,
+            }}
+            source={{ uri: `${BASE}${item.picture.url}` }}
+          />
+        </View>
+        <View style={{ marginLeft: 20, marginRight: 10, flex: 1 }}>
+          <Text
+            numberOfLines={2}
+            style={{
+              color: "black",
+              fontSize: 17,
+              fontWeight: "900",
+            }}
+          >
+            {item.title}{" "}
+          </Text>
+          <Text numberOfLines={4}>{item.description} </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#009387" barStyle="light-content" />
@@ -73,6 +123,7 @@ const HomeScreen = ({ navigation, route }) => {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
       </View>
       <View style={styles.header}>
@@ -96,66 +147,68 @@ const HomeScreen = ({ navigation, route }) => {
 
       <View style={styles.CardRows}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Speciality", { item })}
+          onPress={() =>
+            navigation.navigate("Speciality", {
+              item,
+              // hospitalcode,
+              // hospitalName,
+            })
+          }
           style={styles.card}
         >
-          <View style={{ flex: 1, alignItems: "center" }}>
-            <Fontisto name="doctor" size={30} color="#0b635c" />
+          <View style={{ alignItems: "center" }}>
+            <Fontisto name="doctor" size={28} color="#0b635c" />
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={{ marginLeft: 10 }}>
             <Text style={styles.cardtext}>Book Doctor</Text>
           </View>
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          onPress={() => navigation.navigate("PrescriptionHistory")}
-          style={styles.card}
-        >
-          <View style={{ flex: 1, alignItems: "flex-end", marginTop: 10 }}>
-            <Fontisto name="prescription" size={30} color="#0b635c" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.cardtext}>Prescriptions</Text>
-          </View>
-        </TouchableOpacity> */}
       </View>
-      <View style={styles.CardRows}>
-        <View style={styles.SpecialityCard}>
-          <Text style={styles.Sintro}>
-            Special Treatment for the Following:
-          </Text>
-          <Text style={styles.specialities}>
-            Arthroscopy & Sports Medicine Centre Bariatric & Advance Laparoscopy
-            Surgery Dental & Maxillofacial Surgery Dermatology Emergency & Acute
-            Care Medicine
-          </Text>
-        </View>
-        {/* <TouchableOpacity
-          onPress={() => navigation.navigate("Transaction")}
-          style={styles.card}
-        >
-          <View style={{ flex: 1, alignItems: "flex-end", marginTop: 10 }}>
-            <FontAwesome5 name="money-check" size={30} color="#0b635c" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.cardtext}>Transactions</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Appointment")}
-          style={styles.card}
-        >
-          <View style={{ flex: 1, alignItems: "flex-end", marginTop: 10 }}>
-            <MaterialCommunityIcons
-              name="calendar-clock"
-              size={30}
-              color="#0b635c"
+      {item != undefined &&
+        item.specialities != undefined &&
+        item.specialities.length > 0 && (
+          <View>
+            <Text
+              style={{
+                color: "black",
+                fontSize: 18,
+                fontWeight: "900",
+                justifyContent: "flex-start",
+                alignItems: "flex-start",
+                paddingLeft: 20,
+              }}
+            >
+              Hospital Specialization{" "}
+            </Text>
+            <FlatList
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              style={{ marginTop: 10 }}
+              data={item.specialities}
+              onMomentumScrollEnd={onScrollEnd}
+              renderItem={({ item }) => {
+                return renderListSpecialization(item);
+              }}
+              keyExtractor={(item) => item.id}
             />
+            {
+              <PageControl
+                style={{ marginHorizontal: 0, marginTop: 10 }}
+                numberOfPages={item.specialities.length}
+                currentPage={currentPage}
+                hidesForSinglePage
+                pageIndicatorTintColor="gray"
+                currentPageIndicatorTintColor="#009387"
+                indicatorStyle={{ borderRadius: 5 }}
+                currentIndicatorStyle={{ borderRadius: 5 }}
+                indicatorSize={{ width: 8, height: 8 }}
+                // onPageIndicatorPress={this.onItemTap}
+              />
+            }
           </View>
-          <View style={{ flex: 1, alignItems: "flex-end" }}>
-            <Text style={styles.cardtext}>Appointments</Text>
-          </View>
-        </TouchableOpacity> */}
-      </View>
+        )}
+
       <TouchableOpacity
         style={styles.footer}
         onPress={() => navigation.navigate("PrivacyPolicy")}
@@ -210,8 +263,8 @@ const styles = StyleSheet.create({
 
   PatientName: {
     color: "#0b635c",
-    fontSize: 25,
-    fontWeight: "bold",
+    fontSize: 23,
+    fontWeight: "900",
     justifyContent: "flex-start",
     alignItems: "flex-start",
     fontStyle: "italic",
@@ -219,8 +272,8 @@ const styles = StyleSheet.create({
   },
   intro: {
     color: "black",
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "900",
     fontStyle: "italic",
     justifyContent: "flex-start",
     alignItems: "flex-start",
@@ -230,7 +283,7 @@ const styles = StyleSheet.create({
     color: "black",
     marginTop: 5,
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "900",
     fontStyle: "italic",
     justifyContent: "flex-start",
     alignItems: "flex-start",
@@ -238,7 +291,7 @@ const styles = StyleSheet.create({
   cardtext: {
     color: "black",
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "900",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -274,9 +327,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-    height: 60,
     borderRadius: 15,
     borderWidth: 0.2,
+    paddingVertical: 10,
   },
   SpecialityCard: {
     flex: 1,
@@ -293,12 +346,10 @@ const styles = StyleSheet.create({
   },
 
   imgBackground: {
-    width: "100%",
-    flex: 1,
+    aspectRatio: 1.6,
     shadowOpacity: 0.3,
     shadowOffset: { width: 1, height: 1 },
     shadowColor: "#333",
-    resizeMode: "cover",
     borderRadius: 30,
   },
   header: {
@@ -306,6 +357,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowOffset: { width: 1, height: 1 },
     shadowColor: "#333",
-    height: "40%",
   },
 });

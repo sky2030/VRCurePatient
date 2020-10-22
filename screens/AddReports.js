@@ -26,17 +26,36 @@ function AddReport({ navigation, route }) {
   const [enableshift, setenableShift] = useState(false);
   const [isDatePickerAvailable, setDatePickerAvailable] = useState(false);
   const [reportDate, setReportDate] = useState(new Date());
+  const [reportItem, setReportItem] = useState(undefined)
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      console.log("Add Report focused :", route.params);
-      if (route.params) {
-        setAppointment_id(route.params.appointment_id);
-      } else {
-        setAppointment_id("");
-      }
-      setReportDate(new Date());
+      console.log("Add Report focused :", route.params)
       setReport("");
+      setReportDate(new Date());
+      if (route.params) {
+        if (route.params.appointment_id) {
+          setAppointment_id(route.params.appointment_id);
+        }
+        else {
+          setAppointment_id("");
+        }
+        if (route.params.report) {
+          setReportItem(route.params.report);
+          setReport(route.params.report.report_name)
+          setReportDate(moment(Number(route.params.report.report_date)))
+        }
+        else {
+          setReportItem(undefined);
+        }
+
+      }
+      else {
+        setAppointment_id("");
+        setReportItem(undefined);
+      }
+
+
       setPicture("");
     });
     return unsubscribe;
@@ -75,9 +94,16 @@ function AddReport({ navigation, route }) {
       data.append("appointment_id", appointment_id);
     }
 
+    let method = "POST"
+    let url = `${BASE_URL}report`
+    if (reportItem) {
+      method = "PUT"
+      url = `${url}/${reportItem.report_id}`
+    }
+
     console.log("Data :", JSON.stringify(data));
-    fetch(`${BASE_URL}report`, {
-      method: "POST",
+    fetch(url, {
+      method: method,
       headers: {
         Authorization: userToken,
         "Content-Type": "multipart/form-data",
@@ -176,6 +202,7 @@ function AddReport({ navigation, route }) {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
       </View>
       <ScrollView>
@@ -187,8 +214,7 @@ function AddReport({ navigation, route }) {
           <View style={styles.formHeader}>
             <TouchableOpacity
               style={{ width: "90%", padding: 5 }}
-              onPress={() => setDatePickerAvailable(true)}
-            >
+              onPress={() => setDatePickerAvailable(true)} >
               <TextInput
                 label="Date of Report"
                 value={`${moment(reportDate).format("ll")}`}
@@ -228,13 +254,12 @@ function AddReport({ navigation, route }) {
             </Button>
 
             <View style={{ alignItems: "center" }}>
-              {picture.length > 0 && (
-                <Image
-                  source={{ uri: picture }}
-                  style={styles.thumbnail}
+              {
+                picture.length > 0 &&
+                <Image source={{ uri: picture }} style={styles.thumbnail}
                   resizeMode="contain"
                 />
-              )}
+              }
             </View>
 
             <Modal

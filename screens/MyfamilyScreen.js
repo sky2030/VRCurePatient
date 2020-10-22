@@ -15,26 +15,27 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Addfamily from "../assets/images/Addfamily.png";
 import AsyncStorage from "@react-native-community/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import moment from "moment-timezone";
 
-const MyfamilyScreen = ({ navigation, route }) => {
+const MyfamilyScreen = ({ navigation }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [data, Setdata] = useState([]);
   const [loading, setLoading] = useState(true);
   const [patientId, setpatientId] = useState("");
 
-  const GetFamily = async () => {
-    await setpatientId(route.params.data._id);
-
+  const GetFamily = async () => {    
     const userToken = await AsyncStorage.getItem("userToken");
-    //  console.log(userToken)
-    fetch(`${BASE_URL}family?patientId=${route.params.data._id}`, {
+    // let URL = `${BASE_URL}family-members`;
+    // console.log(URL);
+    fetch(`${BASE_URL}family-members`, {
       method: "GET",
       headers: { Authorization: userToken },
     })
       .then((res) => res.json())
       .then((results) => {
+        console.log(results)
         if (results.code == 200) {
-          Setdata(results.data);
+          Setdata(results.data.members);
           setLoading(false);
         } else {
           Alert.alert(Alert_Title, results.message);
@@ -47,13 +48,12 @@ const MyfamilyScreen = ({ navigation, route }) => {
     //  console.log(data.mobile)
   };
 
-  useEffect(() => {
-    GetFamily();
+  useEffect(() => {   
     const unsubscribe = navigation.addListener("focus", () => {
-      setpatientId(route.params.data._id);
+      GetFamily();
     });
     return unsubscribe;
-  }, [route.params]);
+  }, []);
 
   const renderList = (item) => {
     return (
@@ -63,24 +63,17 @@ const MyfamilyScreen = ({ navigation, route }) => {
         onPress={() => navigation.navigate("familydetail", { item })}
       >
         <View style={styles.header}>
-          <Text style={styles.headtext1}>{item.member_name}</Text>
+          <Text style={styles.headtext1}>{item.name}</Text>
         </View>
         <View style={styles.familybody}>
           <View style={styles.subcard}>
             <Text style={styles.headtext2}>Relation</Text>
-            <Text style={styles.headtext2}>{item.relation} </Text>
+            <Text style={styles.headtext2}>{item.relation.toUpperCase()} </Text>
           </View>
           <View style={styles.subcard}>
-            <Text style={styles.headtext2}>Birthdate</Text>
-            <Text style={styles.headtext2}>{item.birthdate} </Text>
+            <Text style={styles.headtext2}>Age</Text>
+            <Text style={styles.headtext2}>{item.age} </Text>
           </View>
-          {/* <TouchableOpacity
-            activeOpacity={0.95}
-            style={styles.deletecard}
-            onPress={() => DeleteMember(item._id)}
-          >
-            <AntDesign name="delete" size={24} color="#4E557C" />
-          </TouchableOpacity> */}
         </View>
       </TouchableOpacity>
     );
@@ -102,6 +95,7 @@ const MyfamilyScreen = ({ navigation, route }) => {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
       </View>
 
@@ -110,7 +104,7 @@ const MyfamilyScreen = ({ navigation, route }) => {
         renderItem={({ item }) => {
           return renderList(item);
         }}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item) => item.id}
         onRefresh={() => GetFamily()}
         refreshing={loading}
       />
@@ -118,7 +112,7 @@ const MyfamilyScreen = ({ navigation, route }) => {
       <TouchableOpacity
         activeOpacity={0.95}
         style={styles.btn}
-        onPress={() => navigation.navigate("AddFamily", { patientId })}
+        onPress={() => navigation.navigate("AddFamily")}
       >
         <Text style={styles.btntext}>Add Family Member's </Text>
         <Image source={Addfamily} style={styles.addicon} />

@@ -194,6 +194,7 @@ function PatientGeneralInfo({ navigation, route }) {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
       </View>
       <ScrollView>

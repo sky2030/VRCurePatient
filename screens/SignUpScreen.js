@@ -58,11 +58,11 @@ const SignUpScreen = ({ navigation }) => {
       Alert.alert("Wrong Input!", "Enter valid Email ID", [{ text: "Okay" }]);
       return;
     }
-    if (password.length != 8) {
+    if (password.length < 8) {
       Alert.alert("Wrong Input!", "Enter valid password", [{ text: "Okay" }]);
       return;
     }
-    if (confirm_password.length != 8) {
+    if (confirm_password.length < 8) {
       Alert.alert("Wrong Input!", "Enter valid confirm password", [
         { text: "Okay" },
       ]);
@@ -241,8 +241,8 @@ const SignUpScreen = ({ navigation }) => {
               {data.secureTextEntry ? (
                 <Feather name="eye-off" color="grey" size={20} />
               ) : (
-                <Feather name="eye" color="grey" size={20} />
-              )}
+                  <Feather name="eye" color="grey" size={20} />
+                )}
             </TouchableOpacity>
           </View>
 
@@ -269,8 +269,8 @@ const SignUpScreen = ({ navigation }) => {
               {data.secureTextEntry ? (
                 <Feather name="eye-off" color="grey" size={20} />
               ) : (
-                <Feather name="eye" color="grey" size={20} />
-              )}
+                  <Feather name="eye" color="grey" size={20} />
+                )}
             </TouchableOpacity>
           </View>
           <View style={styles.textPrivate}>

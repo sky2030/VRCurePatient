@@ -1,9 +1,97 @@
-import * as React from "react";
-import { StyleSheet, View, Text, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ImageBackground,
+  StatusBar,
+  Alert, FlatList, Dimensions
+} from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-export default function Transaction({ navigation }) {
+import AsyncStorage from "@react-native-community/async-storage";
+const screenWidth = Math.round(Dimensions.get("window").width);
+import moment from "moment-timezone";
+export default function Transaction({ navigation, route }) {
+
+  const [item, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const GetTransactiondata = async () => {
+    const userToken = await AsyncStorage.getItem("userToken");
+    //   console.log(userToken)
+    fetch(`${BASE_URL}orders`, {
+      method: "GET",
+      headers: { Authorization: userToken },
+    })
+      .then((res) => res.json())
+      .then((results) => {
+        console.log("Orders :", JSON.stringify(results.data))
+        setLoading(false);
+        if (results.code == 200) {
+          setData(results.data);
+
+        } else {
+          Alert.alert(Alert_Title, results.message);
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
+      });
+  }
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      setLoading(true);
+      GetTransactiondata();
+
+    });
+
+    return unsubscribe;
+  }, [route.params]);
+  const renderList = (item) => {
+    //{moment(item.date).format("ll")}
+    return (
+      <View style={styles.card1}>
+        <View style={styles.header}>
+          {/* <Text style={styles.headtext1}> Invoice No. {item.invoice} </Text> */}
+          <View style={{ flexDirection: "row", flex: 1, justifyContent: "space-between" }}>
+            <Text style={{
+              alignSelf: "flex-start", backgroundColor: "lightgray",
+              paddingHorizontal: 10, paddingVertical: 2
+            }}>{item.status.toUpperCase()}</Text>
+            <Text style={{
+              alignSelf: "flex-end", backgroundColor: "lightgray",
+              paddingHorizontal: 10, paddingVertical: 2
+            }}>{moment(item.date).format("ll")}</Text>
+          </View>
+          <View style={styles.title7}>
+            <Text style={styles.headtext1}> Invoice No </Text>
+            <Text style={styles.InvoiceNo}>{item.invoice.toUpperCase()}</Text>
+          </View>
+        </View>
+
+        <View style={styles.title4}>
+
+          <View style={styles.title8}>
+            <Text style={styles.headtext2}>Doctor</Text>
+            <Text style={styles.headtext2}>Dr. {item.doctor_name}</Text>
+          </View>
+          <View style={styles.title6}>
+            <Text style={styles.headtext2}>Amount</Text>
+            <Text style={styles.headtext2}>{item.amount} {item.currency} </Text>
+          </View>
+        </View>
+
+
+      </View>
+    )
+  }
   return (
+
+
+
     <View style={styles.container}>
       <View style={styles.head}>
         <MaterialIcons
@@ -18,92 +106,19 @@ export default function Transaction({ navigation }) {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
+
       </View>
-      <ScrollView>
-        <View style={styles.card1}>
-          <View style={styles.header}>
-            <Text style={styles.headtext1}>25 JUN 2020 </Text>
-          </View>
-          <View style={styles.title4}>
-            <View style={styles.title7}>
-              <Text style={styles.headtext2}>Invoice No.</Text>
-              <Text style={styles.InvoiceNo}>#INVR5RK6SOYH2 </Text>
-            </View>
-            <View style={styles.title8}>
-              <Text style={styles.headtext2}>Doctor</Text>
-              <Text style={styles.headtext2}>Dr. Ram Kumar </Text>
-            </View>
-            <View style={styles.title6}>
-              <Text style={styles.headtext2}>Amount</Text>
-              <Text style={styles.headtext2}>Rs.1000/- </Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.card1}>
-          <View style={styles.header}>
-            <Text style={styles.headtext1}>25 JUN 2020 </Text>
-          </View>
-          <View style={styles.title4}>
-            <View style={styles.title7}>
-              <Text style={styles.headtext2}>Invoice No.</Text>
-              <Text style={styles.InvoiceNo}>#INVR5RK6SOYH2 </Text>
-            </View>
-            <View style={styles.title8}>
-              <Text style={styles.headtext2}>Doctor</Text>
-              <Text style={styles.headtext2}>Dr. Ram Kumar </Text>
-            </View>
-            <View style={styles.title6}>
-              <Text style={styles.headtext2}>Amount</Text>
-              <Text style={styles.headtext2}>Rs.1000/- </Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.card1}>
-          <View style={styles.header}>
-            <Text style={styles.headtext1}>25 JUN 2020 </Text>
-          </View>
-          <View style={styles.title4}>
-            <View style={styles.title7}>
-              <Text style={styles.headtext2}>Invoice No.</Text>
-              <Text style={styles.InvoiceNo}>#INVR5RK6SOYH2 </Text>
-            </View>
-            <View style={styles.title8}>
-              <Text style={styles.headtext2}>Doctor</Text>
-              <Text style={styles.headtext2}>Dr. Ram Kumar </Text>
-            </View>
-            <View style={styles.title6}>
-              <Text style={styles.headtext2}>Amount</Text>
-              <Text style={styles.headtext2}>Rs.1000/- </Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.card1}>
-          <View style={styles.header}>
-            <Text style={styles.headtext1}>25 JUN 2020 </Text>
-          </View>
-          <View style={styles.title4}>
-            <View style={styles.title7}>
-              <Text style={styles.headtext2}>Invoice No.</Text>
-              <Text style={styles.InvoiceNo}>#INVR5RK6SOYH2 </Text>
-            </View>
-            <View style={styles.title8}>
-              <Text style={styles.headtext2}>Doctor</Text>
-              <Text style={styles.headtext2}>Dr. Ram Kumar </Text>
-            </View>
-            <View style={styles.title6}>
-              <Text style={styles.headtext2}>Amount</Text>
-              <Text style={styles.headtext2}>Rs.1000/- </Text>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-      {/* <View style={styles.footer}>
-        <Text style={styles.bottomtext}>Privacy Policy | Terms of use</Text>
-      </View> */}
+      <FlatList
+        data={item}
+        renderItem={({ item }) => {
+          return renderList(item);
+        }}
+        onRefresh={() => GetTransactiondata()}
+        refreshing={loading}
+        keyExtractor={(item) => item.invoice}
+      />
     </View>
   );
 }
@@ -163,7 +178,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "900",
     alignSelf: "center",
-    marginVertical: 6,
   },
   btntext: {
     color: "white",
@@ -176,9 +190,11 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   InvoiceNo: {
-    color: "#E3445C",
-    marginTop: 5,
+    color: PRIMARY_COLOR,
     fontWeight: "900",
+    fontSize: 16,
+    marginLeft: 10,
+    marginBottom: 5
   },
   header6: {
     color: "green",
@@ -238,7 +254,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignSelf: "center",
     marginTop: 10,
-    width: "95%",
+    width: screenWidth - 20,
     paddingBottom: 10,
   },
   card2: {
@@ -326,11 +342,13 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   title7: {
-    flex: 1,
+    // flexDirection: "row",
+    justifyContent: "space-between",
     // backgroundColor: "#281",
-    alignItems: "center",
     marginLeft: 5,
-    marginVertical: 5,
+    alignItems: "center",
+    backgroundColor: "#EEF5F4",
+
   },
   title8: {
     flex: 1,

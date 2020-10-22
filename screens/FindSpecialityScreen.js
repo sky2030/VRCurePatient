@@ -17,7 +17,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 const FindSpecialityScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [hospitalcode, sethospitalcode] = useState("");
+  const [hospital, sethospital] = useState("");
+  // const [hospitalcode, sethospitalcode] = useState("");
   const [hospitalName, sethospitalName] = useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
 
@@ -25,15 +26,10 @@ const FindSpecialityScreen = ({ navigation, route }) => {
   // const [hospital, sethospital] = useState({});
 
   const fetchData = async () => {
-    await sethospitalcode(route.params.item.hospitalcode);
-    await sethospitalName(route.params.item.hospitalname);
-    // await sethospital(route.params.item);
     const userToken = await AsyncStorage.getItem("userToken");
-    console.log(route.params);
-    fetch(
-      `${BASE_URL}hospitals/${route.params.item.hospitalcode}/departments`,
-      { method: "GET", headers: { Authorization: userToken } }
-    )
+    let baseURL = `${BASE_URL}hospitals/${route.params.item.hospitalcode}/departments`;
+    console.log("Base url :", baseURL);
+    fetch(baseURL, { method: "GET", headers: { Authorization: userToken } })
       .then((res) => res.json())
       .then((results) => {
         setLoading(false);
@@ -51,18 +47,20 @@ const FindSpecialityScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
+      // sethospitalcode(route.params.hospitalcode);
+      sethospital(route.params.item);
+      sethospitalName(route.params.item.hospitalName);
       fetchData();
     });
 
     return unsubscribe;
-  }, [route.params.item]);
+  }, [route.params]);
 
   const renderList = (item) => {
     return (
       <TouchableOpacity
-        onPress={() =>
-          navigation.navigate("Doctors", { item, hospitalName, hospitalcode })
-        }
+        activeOpacity={0.8}
+        onPress={() => navigation.navigate("Doctors", { item, hospital })}
         style={styles.card}
       >
         <View style={styles.imgview}>
@@ -92,6 +90,7 @@ const FindSpecialityScreen = ({ navigation, route }) => {
           size={30}
           color="white"
           onPress={() => navigation.navigate("Hospital")}
+          style={{ position: "absolute", right: 10 }}
         />
       </View>
 
@@ -103,17 +102,16 @@ const FindSpecialityScreen = ({ navigation, route }) => {
         onChangeText={onChangeSearch}
         value={searchQuery}
       />
-      <View>
-        <FlatList
-          data={data}
-          renderItem={({ item }) => {
-            return renderList(item);
-          }}
-          keyExtractor={(item) => item._id}
-          onRefresh={() => fetchData()}
-          refreshing={loading}
-        />
-      </View>
+
+      <FlatList
+        data={data}
+        renderItem={({ item }) => {
+          return renderList(item);
+        }}
+        keyExtractor={(item) => item._id}
+        onRefresh={() => fetchData()}
+        refreshing={loading}
+      />
     </View>
   );
 };

@@ -9,31 +9,31 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
-  Keyboard,
-  ActivityIndicator,
+  Keyboard, ActivityIndicator
 } from "react-native";
 import Razorpay from "../assets/images/razorpay-logo.png";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-community/async-storage";
-import RazorpayCheckout from "react-native-razorpay";
+import RazorpayCheckout from 'react-native-razorpay';
 
-const FETCHING_ORDERID = "Fetching payment information...";
-const PAYMENT_SUCCESS_REPORT = "Processing payment...";
+const FETCHING_ORDERID = "Fetching payment information..."
+const PAYMENT_SUCCESS_REPORT = "Processing payment..."
 export default function PaymentGatway({ navigation, route }) {
-  let appointment_id = "";
-  const [order, setorder] = useState(Object);
-  const [isLoading, setIsLoading] = useState(true);
-  const [paymentButtonInfo, setPaymentButtonInfo] = useState(FETCHING_ORDERID);
+
+  let appointment_id = ""
+  const [order, setorder] = useState(Object)
+  const [isLoading, setIsLoading] = useState(true)
+  const [paymentButtonInfo, setPaymentButtonInfo] = useState(FETCHING_ORDERID)
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
-      setPaymentButtonInfo(FETCHING_ORDERID);
-      setIsLoading(true);
-      setorder(Object);
-      appointment_id = "";
+      setPaymentButtonInfo(FETCHING_ORDERID)
+      setIsLoading(true)
+      setorder(Object)
+      appointment_id = ""
       if (route.params) {
-        appointment_id = route.params.appointment_id;
-        getOrderID();
+        appointment_id = route.params.appointment_id
+        getOrderID()
       }
     });
     return unsubscribe;
@@ -50,7 +50,7 @@ export default function PaymentGatway({ navigation, route }) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        appointment_id: appointment_id,
+        appointment_id: appointment_id
       }),
     })
       .then((res) => res.json())
@@ -58,10 +58,13 @@ export default function PaymentGatway({ navigation, route }) {
         console.log(results.code, JSON.stringify(results));
 
         if (results.code == 200) {
-          const stringVal = `Proceed To Pay ${results.data.merchant.amount} ${results.data.merchant.currency}`;
-          setPaymentButtonInfo(stringVal);
-          setIsLoading(false);
-          setorder(results.data);
+          const stringVal = `Proceed To Pay ${results.data.merchant.amount} ${results.data.merchant.currency}`
+          setPaymentButtonInfo(stringVal)
+          setIsLoading(false)
+          setorder(results.data)
+
+
+
         } else {
           Alert.alert(Alert_Title, results.message);
         }
@@ -69,9 +72,11 @@ export default function PaymentGatway({ navigation, route }) {
       .catch((err) => {
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
       });
-  };
+  }
   const submitData = async () => {
+
     if (order && order.merchant && order.customer) {
+
       var options = {
         description: order.merchant.description,
         image: order.merchant.image,
@@ -83,26 +88,27 @@ export default function PaymentGatway({ navigation, route }) {
         prefill: {
           email: order.customer.email,
           contact: order.customer.mobile,
-          name: order.customer.name,
+          name: order.customer.name
         },
-        theme: { color: PRIMARY_COLOR },
-      };
-      console.log("Razor Pay :", options);
+        theme: { color: PRIMARY_COLOR }
+      }
+      console.log("Razor Pay :", options)
       RazorpayCheckout.open(options)
         .then((data) => {
-          console.log("Payment data :", data);
-          setPaymentButtonInfo(PAYMENT_SUCCESS_REPORT);
-          setIsLoading(true);
+          console.log("Payment data :", data)
+          setPaymentButtonInfo(PAYMENT_SUCCESS_REPORT)
+          setIsLoading(true)
           // handle success
           // Alert.alert(Alert_Title, `Success: ${data.razorpay_payment_id}`);
-          submitPaymentSucess(data);
+          submitPaymentSucess(data)
         })
         .catch((failure) => {
           // handle failure
-          console.log(failure);
+          console.log(failure)
           if (failure && failure.error) {
             Alert.alert(Alert_Title, failure.error.description);
           }
+
         });
     }
   };
@@ -122,20 +128,20 @@ export default function PaymentGatway({ navigation, route }) {
       .then((results) => {
         console.log(JSON.stringify(results));
 
-        setPaymentButtonInfo("");
-        setIsLoading(false);
-        setorder("");
+        setPaymentButtonInfo('')
+        setIsLoading(false)
+        setorder("")
         Alert.alert(Alert_Title, results.message);
-        navigation.goBack();
+        navigation.goBack()
       })
       .catch((err) => {
-        setPaymentButtonInfo("");
-        setIsLoading(false);
-        setorder("");
+        setPaymentButtonInfo('')
+        setIsLoading(false)
+        setorder("")
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
-        navigation.goBack();
+        navigation.goBack()
       });
-  };
+  }
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
@@ -146,19 +152,19 @@ export default function PaymentGatway({ navigation, route }) {
             onPress={() => navigation.goBack()}
             style={styles.back}
           />
+
         </View>
-        <Image source={Razorpay} style={{ alignSelf: "center" }} />
-        {isLoading == true && (
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              alignSelf: "center",
-            }}
-          >
+        <Image source={Razorpay}
+          style={{ alignSelf: "center" }}
+        />
+        {
+          isLoading == true && <View style={{
+            justifyContent: 'center', alignItems: 'center', alignSelf: "center",
+
+          }}>
             <ActivityIndicator size="large" />
           </View>
-        )}
+        }
         {
           <TouchableOpacity
             style={styles.Paymentbtn}

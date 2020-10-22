@@ -1,7 +1,7 @@
 //===============Network=====================//
 
-global.BASE = "https://api.mconnecthealth.com";
-//global.BASE = "https://stage.mconnecthealth.com"
+//global.BASE = "http://d39fa9029c9d.ngrok.io";
+global.BASE = "https://stage.mconnecthealth.com";
 
 global.BASE_PATH = `${BASE}/v1/patient`;
 global.BASE_URL = `${BASE_PATH}/`;

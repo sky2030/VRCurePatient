@@ -39,7 +39,7 @@ const MainTabScreen = () => (
       // component={FindSpecialityStackScreen}
       component={ReportStackScreen}
       options={{
-        tabBarLabel: "Medical Records",
+        tabBarLabel: "Reports",
         tabBarColor: "#009387",
         tabBarIcon: ({ color }) => (
           <FontAwesome5 name="notes-medical" size={26} color={color} />

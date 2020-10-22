@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from "react-native";
 const screenWidth = Math.round(Dimensions.get("window").width);
+
 import AsyncStorage from "@react-native-community/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
@@ -20,6 +21,7 @@ import { TextInput, Button } from "react-native-paper";
 import moment from "moment-timezone";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { AntDesign } from "@expo/vector-icons";
+import { Picker } from '@react-native-community/picker';
 
 const AppointmentScreen = ({ navigation, route }) => {
   let startDate = moment().startOf("day").format("x");
@@ -30,20 +32,26 @@ const AppointmentScreen = ({ navigation, route }) => {
   const [modal, setModal] = useState(false);
   const [slotDate, setslotDate] = useState(moment().format("ll"));
   const [isDatePickerAvailable, setDatePickerAvailable] = useState(false);
-
+  const [slotValue, setSlotValue] = useState("booked");
+  const [allSlots, setAllSlots] = useState([]);
+  let completed_status = "completed"
+  let booked_status = "booked"
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", async () => {
-      setLoading(true);
-      setAppointmentList([]);
-      fetchData();
-    });
-    return unsubscribe;
+    fetchData();
+    // const unsubscribe = navigation.addListener("focus", async () => {
+
+    //   fetchData();
+    // });
+    // return unsubscribe;
   }, [route.params]);
 
   const updateStartEndDate = async (sdate) => {
     startDate = moment(sdate).startOf("day").format("x");
+
     endDate = moment(sdate).endOf("day").format("x");
-    setslotDate(moment(sdate).startOf("day").format("ll"));
+
+
+    setslotDate(moment(sdate).format("ll"));
   };
   const handleDatePicker = (date) => {
     updateStartEndDate(date);
@@ -52,7 +60,7 @@ const AppointmentScreen = ({ navigation, route }) => {
   };
   const fetchData = async () => {
     const userToken = await AsyncStorage.getItem("userToken");
-    let URL = `${BASE_URL}doctorslots?day_from=${startDate}&day_to=${endDate}&self=true&status[]=booked`;
+    let URL = `${BASE_URL}doctorslots?day_from=${startDate}&day_to=${endDate}&self=true`;
     console.log(URL);
     fetch(URL, {
       method: "GET",
@@ -60,16 +68,22 @@ const AppointmentScreen = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((results) => {
-        console.log(JSON.stringify(results));
         setLoading(false);
         if (results.code == 200) {
-          setAppointmentList(results.data);
+          setAllSlots(results.data)
+          // console.log("Data appointment :", JSON.stringify(results.data))
+          let list = results.data.filter(item => {
+            if (item.status == slotValue)
+              return item
+          })
+          setAppointmentList(list);
         } else {
           Alert.alert(Alert_Title, results.message);
           setLoading(false);
         }
       })
       .catch((err) => {
+        setLoading(false);
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
       });
   };
@@ -102,83 +116,34 @@ const AppointmentScreen = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((results) => {
-        console.log(results);
-        if (results.message != "success") {
+        if (results.code != 200) {
           Alert.alert(Alert_Title, results.message);
         } else {
+          navigation.navigate("EnxConferenceScreen", {
+            streamId: results.data.enableX.room_id,
+            token: results.data.enableX.token
+          })
         }
       })
       .catch((err) => {
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
-        // setAppointmentList(["jbhjbj", "jnjnj"])
       });
   };
 
-  const pickFromGallery = async () => {
-    const { granted } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    if (granted) {
-      let data = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        //  aspect: [1, 1],
-        quality: 0.5,
-        base64: true,
-      });
-      // console.log(data.base64);
-      if (!data.cancelled) {
-        //  handleUpload(newfile);
-        setPicture(`data:image/jpeg;base64,${data.base64}`);
-      }
-    } else {
-      Alert.alert(Alert_Title, "you need to give up permission to work");
-    }
-  };
-  const pickFromCamera = async () => {
-    const { granted } = await Permissions.askAsync(Permissions.CAMERA);
-    if (granted) {
-      let data = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.allFiles,
-        allowsEditing: true,
-        //  aspect: [1, 1],
-        quality: 0.5,
-        base64: true,
-      });
-      // console.log(data.base64);
-      if (!data.cancelled) {
-        //  handleUpload(newfile);
-        setPicture(`data:image/jpeg;base64,${data.base64}`);
-      }
-    } else {
-      Alert.alert(Alert_Title, "you need to give up permission to work");
-    }
-  };
-
-  const handleUpload = (image) => {
-    const data = new FormData();
-    data.append("file", image);
-    data.append("upload_preset", "skyMedi");
-    data.append("cloud_name", "skycloud55");
-
-    fetch("https://api.cloudinary.com/v1_1/skycloud55/image/upload", {
-      method: "post",
-      body: data,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setPicture(data.url);
-        setModal(false);
-      })
-      .catch((err) => {
-        Alert.alert("error while uploading");
-      });
-  };
 
   const renderItem = (item, index) => {
     const joinConversationStatus = statusForJoinConversation(item);
     return (
       <View style={styles.MainCard}>
         <View style={styles.header}>
-          <Text style={styles.whitebold}>{item.doctor.name}</Text>
+          <Text style={{
+            color: "white",
+            // marginVertical: 5,
+            fontWeight: "900",
+            textAlign: "center",
+            alignSelf: "center",
+            fontSize: 16
+          }}>{item.doctor.name}</Text>
         </View>
         <View style={styles.cardbody}>
           <View style={styles.cardsections}>
@@ -204,28 +169,10 @@ const AppointmentScreen = ({ navigation, route }) => {
             onPress={() =>
               navigation.navigate("ReportRepo", { appointment_id: item.id })
             }
-            style={styles.cardbtn}
+            style={[styles.cardbtn, { marginRight: 10, backgroundColor: "#00AAA0" }]}
           >
             <Text style={styles.whitebold}> Report </Text>
           </TouchableOpacity>
-          {joinConversationStatus == 1 && (
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={() => joinConversationPressed(item)}
-              style={styles.cardDisabled}
-            >
-              <Text style={styles.whitebold}>Join Conversation </Text>
-            </TouchableOpacity>
-          )}
-          {joinConversationStatus == 0 && (
-            <TouchableOpacity
-              onPress={() => joinConversationPressed(item)}
-              style={styles.cardEnabled}
-            >
-              <Text style={styles.whitebold}>Join Conversation </Text>
-            </TouchableOpacity>
-          )}
-
           <TouchableOpacity
             activeOpacity={0.95}
             onPress={() =>
@@ -233,35 +180,53 @@ const AppointmentScreen = ({ navigation, route }) => {
                 appointment_id: item.id,
               })
             }
-            style={styles.cardbtn}
+            style={[styles.cardbtn, { backgroundColor: "#253E66" }]}
           >
             <Text style={styles.whitebold}> Prescriptions </Text>
           </TouchableOpacity>
+
+
         </View>
-        {/* <TouchableOpacity
-          activeOpacity={0.95}
-          onPress={() => navigation.navigate("Prescription", { item })}
-          style={styles.cardbtn}
-        >
-          <Text style={styles.whitebold}> Cancel Appointment </Text>
-        </TouchableOpacity> */}
+
+        {
+          item.status == booked_status && <View style={styles.btnrow}>
+            {
+              joinConversationStatus == 1 && (
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => joinConversationPressed(item)}
+                  style={[styles.cardDisabled, { marginRight: 10, backgroundColor: "#556B2F" }]}
+                >
+                  <Text style={[styles.whitebold,]}>Join Conversation </Text>
+                </TouchableOpacity>
+              )}
+            {
+              joinConversationStatus == 0 && (
+                <TouchableOpacity
+                  onPress={() => joinConversationPressed(item)}
+                  style={[styles.cardEnabled, { marginRight: 10, backgroundColor: "#2E8B57" }]}
+                >
+                  <Text style={styles.whitebold}>Join Conversation </Text>
+                </TouchableOpacity>
+              )
+            }
+
+            <TouchableOpacity
+              activeOpacity={0.95}
+              onPress={() =>
+                navigation.navigate("Reschedule", { item })
+              }
+              style={[styles.cardbtn, { backgroundColor: "#EF6555" }]}
+            >
+              <Text style={styles.whitebold}> Reschedule </Text>
+            </TouchableOpacity>
+
+          </View>
+        }
       </View>
     );
 
-    {
-      /* <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => slotPressed(item, index)}
-                style={{
-                    margin: 10, backgroundColor: displayBGSlot(item.status), flex: 1,
-                    justifyContent: "center"
-                }}>
-                <Text style={{ alignSelf: "center", fontSize: 13, color: "#eee" }}>{StringFromTime(item.time_millis)}</Text>
-                <Text style={{ alignSelf: "center", fontSize: 14, color: "#eee", marginTop: 6 }}>
-                    {(item.status).toUpperCase()}</Text>
 
-            </TouchableOpacity> */
-    }
   };
   return (
     <View
@@ -272,74 +237,77 @@ const AppointmentScreen = ({ navigation, route }) => {
         alignSelf: "center",
       }}
     >
-      <View style={styles.Subtitle}>
-        <Text style={styles.toptext}>Upcoming Appointment on {slotDate}</Text>
-        <TouchableOpacity
-          style={{
-            color: "#08211c",
-            marginLeft: 10,
-          }}
-          onPress={() => setDatePickerAvailable(true)}
-        >
-          <AntDesign name="calendar" size={32} color="black" />
-        </TouchableOpacity>
-      </View>
-      <DateTimePickerModal
-        isVisible={isDatePickerAvailable}
-        mode="date"
-        onConfirm={handleDatePicker}
-        onCancel={() => setDatePickerAvailable(false)}
-      />
-      <FlatList
-        data={appointmentList}
-        renderItem={({ item, index }) => renderItem(item, index)}
-        keyExtractor={(item, index) => item.id}
-        onRefresh={() => fetchData()}
-        refreshing={loading}
-      />
+      {
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modal}
-        onRequestClose={() => {
-          setModal(false);
-        }}
-      >
-        <View style={styles.modalView}>
-          <View style={styles.modalButtonView}>
-            <Button
-              icon="camera"
-              theme={theme}
-              mode="contained"
-              onPress={() => pickFromCamera()}
-            >
-              camera
-            </Button>
-            <Button
-              icon="image-area"
-              mode="contained"
-              theme={theme}
-              onPress={() => pickFromGallery()}
-            >
-              gallery
-            </Button>
-          </View>
-          <View style={styles.modalButtonView}>
-            <Button
-              icon="upload"
-              theme={theme}
-              mode="contained"
-              onPress={() => setModal(false)}
-            >
-              Upload
-            </Button>
-          </View>
-          <Button theme={theme} onPress={() => setModal(false)}>
-            cancel
-          </Button>
+        <View style={{
+          flexDirection: "row", alignSelf: "center", marginBottom: 20
+
+
+        }}>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={{
+              height: 50, width: 150,
+              justifyContent: "center"
+            }}
+            onPress={() => setDatePickerAvailable(true)}
+          >
+            <Text style={styles.toptext} >{`${slotDate}  `}
+              <AntDesign name="calendar" size={20} color="black" />
+            </Text>
+
+          </TouchableOpacity>
+          <Picker
+            selectedValue={slotValue}
+            style={{
+              height: 50, width: 150, marginLeft: 20,
+              color: "black"
+            }}
+            onValueChange={(itemValue, itemIndex) => {
+
+              setSlotValue(itemValue)
+              let list = allSlots.filter(item => {
+                if (item.status == itemValue)
+                  return item
+              })
+              setAppointmentList(list);
+            }}
+          >
+            <Picker.Item label="Upcoming" value={booked_status} />
+            <Picker.Item label="Completed" value={completed_status} />
+          </Picker>
+
+
+          <DateTimePickerModal
+            isVisible={isDatePickerAvailable}
+            mode="date"
+            onConfirm={handleDatePicker}
+            onCancel={() => setDatePickerAvailable(false)}
+          />
+
         </View>
-      </Modal>
+      }
+      {
+        appointmentList.length == 0 && <Text style={{ alignSelf: "center", fontSize: 16 }}> No Appointment </Text>
+      }
+      {
+        <FlatList
+          style={{ marginBottom: 30 }}
+          data={appointmentList}
+          renderItem={({ item, index }) => renderItem(item, index)}
+          keyExtractor={(item, index) => item.id}
+        />
+      }
+
+
+      <TouchableOpacity
+        activeOpacity={0.95}
+        onPress={() => navigation.navigate("PrivacyPolicy")}
+        style={styles.footer}
+      >
+        <Text style={styles.bottomtext}>Privacy Policy | Terms of use</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -364,8 +332,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   toptext: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "900",
     marginTop: 5,
   },
   head: {
@@ -378,15 +346,18 @@ const styles = StyleSheet.create({
   whitebold: {
     color: "white",
     // marginVertical: 5,
-    fontWeight: "500",
+    fontWeight: "900",
     textAlign: "center",
     alignSelf: "center",
+    fontSize: 14,
+    marginVertical: 8
+
   },
 
   cardtext: {
     color: "#4E557C",
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: "900",
     marginBottom: 2,
     marginTop: 8,
     marginLeft: 2,
@@ -399,7 +370,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
-    height: 30,
+    height: 40,
   },
 
   MainCard: {
@@ -422,19 +393,17 @@ const styles = StyleSheet.create({
     shadowColor: "#333",
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    height: 35,
     justifyContent: "center",
   },
   cardEnabled: {
     flex: 1,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: "green",
+    backgroundColor: "#FF7A5A",
     shadowOffset: { width: 1, height: 1 },
     shadowColor: "#333",
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    height: 35,
     justifyContent: "center",
   },
   cardbtn: {
@@ -446,8 +415,6 @@ const styles = StyleSheet.create({
     shadowColor: "#333",
     shadowOpacity: 0.3,
     shadowRadius: 2,
-    marginHorizontal: 7,
-    height: 35,
     justifyContent: "center",
   },
   Cancelbtn: {
@@ -468,20 +435,29 @@ const styles = StyleSheet.create({
 
   btnrow: {
     flexDirection: "row",
+    marginHorizontal: 30,
     // justifyContent: "space-between",
     // alignItems: "center",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 5,
-    height: 45,
-    marginBottom: 5,
+    justifyContent: "space-between",
+    marginBottom: 10,
+
   },
   cardbody: {
     justifyContent: "space-between",
     flexDirection: "row",
     paddingHorizontal: 10,
+    marginBottom: 10,
   },
-
+  footer: {
+    position: "absolute",
+    bottom: 1,
+    padding: 10,
+    height: 40,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
   cardsections: {
     alignItems: "center",
     justifyContent: "center",
