@@ -14,7 +14,7 @@ import {
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Addfamily from "../assets/images/Addfamily.png";
 import AsyncStorage from "@react-native-community/async-storage";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, FontAwesome5 } from "@expo/vector-icons";
 import moment from "moment-timezone";
 
 const MyfamilyScreen = ({ navigation }) => {
@@ -70,6 +70,8 @@ const MyfamilyScreen = ({ navigation }) => {
             <Text style={styles.headtext2}>Relation</Text>
             <Text style={styles.headtext2}>{item.relation.toUpperCase()} </Text>
           </View>
+          {item.gender == "Male" ? <FontAwesome5 name="male" size={30} color={PRIMARY_COLOR} /> :
+            <FontAwesome5 name="female" size={30} color={PRIMARY_COLOR} />}
           <View style={styles.subcard}>
             <Text style={styles.headtext2}>Age</Text>
             <Text style={styles.headtext2}>{item.age} </Text>

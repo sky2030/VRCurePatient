@@ -1,6 +1,6 @@
 //===============Network=====================//
 
-//global.BASE = "http://d39fa9029c9d.ngrok.io";
+//global.BASE = "http://5e95e4ad370d.ngrok.io";
 global.BASE = "https://stage.mconnecthealth.com";
 
 global.BASE_PATH = `${BASE}/v1/patient`;
@@ -18,3 +18,5 @@ global.SOMETHING_WENT_WRONG = "Something went wrong";
 
 //=========Colors======================//
 global.PRIMARY_COLOR = "#009387";
+
+global.HEIGHT_ROW = 45;

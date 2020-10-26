@@ -390,6 +390,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === "ios" ? 0 : -12,
     paddingLeft: 10,
     color: "#05375a",
+    height: HEIGHT_ROW
   },
   button: {
     alignItems: "center",

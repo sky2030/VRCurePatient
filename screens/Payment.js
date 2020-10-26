@@ -33,6 +33,7 @@ export default function PaymentGatway({ navigation, route }) {
       appointment_id = ""
       if (route.params) {
         appointment_id = route.params.appointment_id
+
         getOrderID()
       }
     });
@@ -43,15 +44,20 @@ export default function PaymentGatway({ navigation, route }) {
     const userToken = await AsyncStorage.getItem("userToken");
     let URL = `${BASE_URL}order`;
     console.log(URL);
+    let payLoad = {
+      appointment_id: appointment_id
+    }
+    if (route.params && route.params.family_member_id) {
+      payLoad.family_member_id = route.params.family_member_id
+    }
+    console.log("payLoad :", payLoad)
     fetch(URL, {
       method: "POST",
       headers: {
         Authorization: userToken,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        appointment_id: appointment_id
-      }),
+      body: JSON.stringify(payLoad),
     })
       .then((res) => res.json())
       .then((results) => {

@@ -368,6 +368,7 @@ const styles = StyleSheet.create({
   inputStyle: {
     margin: 5,
     width: "90%",
+    height: HEIGHT_ROW
   },
   uploadImage: {
     margin: 5,

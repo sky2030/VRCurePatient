@@ -22,8 +22,8 @@ export default function DoctorSelection({ navigation, route }) {
 
   const fetchData = async () => {
     await setdeptcode(route.params.item.deptcode);
-    await sethospitalName(route.params.hospital.hospitalname);
-    await sethospitalcode(route.params.hospital.hospitalcode);
+    await sethospitalName(route.params.hospitalName);
+    await sethospitalcode(route.params.hospitalcode);
     const userToken = await AsyncStorage.getItem("userToken");
     // console.log(userToken)
     fetch(

@@ -17,8 +17,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 const FindSpecialityScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const [hospital, sethospital] = useState("");
-  // const [hospitalcode, sethospitalcode] = useState("");
+  const [hospitalcode, sethospitalcode] = useState("");
   const [hospitalName, sethospitalName] = useState("");
   const [searchQuery, setSearchQuery] = React.useState("");
 
@@ -26,10 +25,15 @@ const FindSpecialityScreen = ({ navigation, route }) => {
   // const [hospital, sethospital] = useState({});
 
   const fetchData = async () => {
+    await sethospitalcode(route.params.item.hospitalcode);
+    await sethospitalName(route.params.item.hospitalname);
     const userToken = await AsyncStorage.getItem("userToken");
-    let baseURL = `${BASE_URL}hospitals/${route.params.item.hospitalcode}/departments`;
-    console.log("Base url :", baseURL);
-    fetch(baseURL, { method: "GET", headers: { Authorization: userToken } })
+    let baseURL = `${BASE_URL}hospitals/${route.params.item.hospitalcode}/departments`
+    console.log("Base url :", baseURL)
+    fetch(
+      baseURL,
+      { method: "GET", headers: { Authorization: userToken } }
+    )
       .then((res) => res.json())
       .then((results) => {
         setLoading(false);
@@ -47,20 +51,19 @@ const FindSpecialityScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-      // sethospitalcode(route.params.hospitalcode);
-      sethospital(route.params.item);
-      sethospitalName(route.params.item.hospitalName);
       fetchData();
     });
 
     return unsubscribe;
-  }, [route.params]);
+  }, [route.params.item]);
 
   const renderList = (item) => {
     return (
       <TouchableOpacity
         activeOpacity={0.8}
-        onPress={() => navigation.navigate("Doctors", { item, hospital })}
+        onPress={() =>
+          navigation.navigate("Doctors", { item, hospitalName, hospitalcode })
+        }
         style={styles.card}
       >
         <View style={styles.imgview}>

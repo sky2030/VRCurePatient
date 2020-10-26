@@ -27,6 +27,25 @@ import RNPickerSelect from "react-native-picker-select";
 
 let NA = "N/A";
 
+const genderItem = [
+  {
+    label: NA,
+    value: NA,
+  },
+  {
+    label: "Male",
+    value: "Male",
+  },
+  {
+    label: "Female",
+    value: "Female",
+  },
+  {
+    label: "Other",
+    value: "Other",
+  },
+];
+
 const weightItem = () => {
   let list = [
     {
@@ -117,6 +136,7 @@ const FamilyDetail = ({ navigation, route }) => {
   const [name, SetMemberName] = useState("");
   const [relation, setrelation] = useState("");
   const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
   const [birth_millis, setbirthdate] = useState(undefined);
   const [height, setheight] = useState("");
   const [weight, setweight] = useState("");
@@ -136,6 +156,7 @@ const FamilyDetail = ({ navigation, route }) => {
       birth_millis: moment(birth_millis).format("x"),
       height: `${retnum(height)}`,
       weight: `${retnum(weight)}`,
+      gender,
       id
     };
     console.log(JSON.stringify(payload))
@@ -174,6 +195,7 @@ const FamilyDetail = ({ navigation, route }) => {
       setheight(route.params.item.height + " cm")
       setweight(route.params.item.weight + " Kg")
       SetMemberID(route.params.item.id)
+      setGender(route.params.item.gender)
 
 
       // console.log(route.params)
@@ -196,7 +218,6 @@ const FamilyDetail = ({ navigation, route }) => {
       .then((res) => res.json())
       .then((data) => {
         if (data.code == 200) {
-          Alert.alert(`${name} deleted`);
           navigation.navigate("Myfamily");
         }
         Alert.alert(Alert_Title, data.message);
@@ -235,14 +256,14 @@ const FamilyDetail = ({ navigation, route }) => {
           <View style={styles.cardContent}>
             <MaterialIcons name="person" size={32} color="#047858" />
 
-            <Text style={styles.mytext}>{name}</Text>
+            <Text style={styles.mytext}>{name} </Text>
           </View>
         </Card>
         <Card style={styles.mycard}>
           <View style={styles.cardContent}>
             <MaterialIcons name="speaker-group" size={32} color="#047858" />
 
-            <Text style={styles.mytext}>{relation}, {age} </Text>
+            <Text style={styles.mytext}>{relation}, {age}  {gender} </Text>
           </View>
         </Card>
         <Card style={styles.mycard}>
@@ -288,7 +309,18 @@ const FamilyDetail = ({ navigation, route }) => {
               <AntDesign name="calendar" size={45} color="black" />
             </TouchableOpacity>
           </View>
-
+          <View style={styles.hwInput}>
+            <RNPickerSelect
+              placeholder={{}}
+              items={genderItem}
+              onValueChange={(value) => {
+                setGender(value);
+              }}
+              style={pickerSelectStyles}
+              value={gender}
+              useNativeAndroidPickerStyle={false}
+            />
+          </View>
           <View style={styles.hwInput}>
             <RNPickerSelect
               placeholder={{}}
@@ -321,7 +353,7 @@ const FamilyDetail = ({ navigation, route }) => {
               useNativeAndroidPickerStyle={false}
             /></View>
           <View style={styles.hwInput}>
-           
+
             <RNPickerSelect
               placeholder={{}}
               items={weightItem()}
@@ -438,7 +470,7 @@ const styles = StyleSheet.create({
     padding: 10,
     color: "white",
   },
-  
+
   titletext: {
     color: "white",
     fontSize: 21,
@@ -462,6 +494,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     borderRadius: 6,
     marginTop: 20,
+    height: HEIGHT_ROW
   },
   inputlast: {
     borderWidth: 1,

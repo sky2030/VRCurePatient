@@ -162,8 +162,8 @@ const SignInScreen = ({ navigation }) => {
             {data.secureTextEntry ? (
               <Feather name="eye-off" color="grey" size={20} />
             ) : (
-              <Feather name="eye" color="grey" size={20} />
-            )}
+                <Feather name="eye" color="grey" size={20} />
+              )}
           </TouchableOpacity>
         </View>
         {data.isValidPassword ? null : (
@@ -285,6 +285,7 @@ const styles = StyleSheet.create({
     marginTop: Platform.OS === "ios" ? 0 : -12,
     paddingLeft: 10,
     color: "#05375a",
+    height: HEIGHT_ROW
   },
   errorMsg: {
     color: "#FF0000",

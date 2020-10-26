@@ -36,7 +36,7 @@ const ProfileScreen = ({ navigation }) => {
       .then((res) => res.json())
       .then((results) => {
         if (results.code == 200) {
-         // console.log(JSON.stringify(results));
+          console.log(JSON.stringify(results));
           if (results.data.picture && results.data.picture.length > 0) {
             if (results.data.picture.includes("data:image/") == false) {
               results.data.picture = `data:image/jpeg;base64,${results.data.picture}`;
@@ -204,7 +204,7 @@ const ProfileScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.row1}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate("HealthHistory")}
             style={styles.optionCards}
           >
@@ -214,7 +214,7 @@ const ProfileScreen = ({ navigation }) => {
             <View style={styles.textstyle}>
               <Text style={styles.smallcardtext}>Appointment History</Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             onPress={() => navigation.navigate("MedicalProcedures")}
             style={styles.optionCards}

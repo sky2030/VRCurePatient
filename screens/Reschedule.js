@@ -24,7 +24,7 @@ const TRANSIENT_COLOR = "#F72";
 const COMPLETED_COLOR = "#0099ff";
 const IS_AVAILABLE = "available";
 const IS_BOOKED = "booked";
-const IS_CANCELED = "canceled";
+const IS_CANCELED = "cancelled";
 const IS_TRANSIENT = "transient";
 const IS_COMPLETED = "completed"
 const NOT_AVAILABLE = "NOT AVAILABLE"
@@ -96,7 +96,7 @@ const Reschedule = ({ navigation, route }) => {
             to_appointment_id: item.id
         }
 
-
+        console.log("", URL, payLoad)
         fetch(URL, {
             method: "PUT",
             headers: {

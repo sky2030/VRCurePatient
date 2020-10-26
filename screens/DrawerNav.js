@@ -12,7 +12,6 @@ import DoctorSelection from "./DoctorSelection";
 import GeneralInfo from "./PatientGeneralInfo";
 import HealthHistory from "./HealthHistory";
 import PrescriptionHistory from "./PrescriptionHistory";
-import Prescription from "./Prescription";
 import MedicalProcedures from "./MedicalProcedures";
 import Transaction from "./TransactionScreen";
 import FindSpecialityScreen from "./FindSpecialityScreen";
@@ -43,7 +42,6 @@ const DrawerStackScreen = ({ }) => (
     <Drawer.Screen name="Speciality" component={FindSpecialityScreen} />
     <Drawer.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
     <Drawer.Screen name="AddFamily" component={AddFamily} />
-    <Drawer.Screen name="Prescription" component={Prescription} />
     <Drawer.Screen name="ReportRepo" component={ReportRepo} />
     <Drawer.Screen name="AddReport" component={AddReport} />
     <Drawer.Screen name="payment" component={PaymentGatway} />

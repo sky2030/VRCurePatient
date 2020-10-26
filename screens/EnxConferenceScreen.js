@@ -19,7 +19,7 @@ import {
   Enx,
   EnxStream,
   EnxPlayerView,
-} from "enx-rtc-react-native";
+} from "enx-rtc-react-native"
 
 //type Props = {};
 export default class EnxConferenceScreen extends PureComponent {

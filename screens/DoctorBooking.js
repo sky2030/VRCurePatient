@@ -11,10 +11,12 @@ import {
   Dimensions,
 } from "react-native";
 import moment from "moment-timezone";
+import { Picker } from '@react-native-community/picker';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-community/async-storage";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+let NA = "N/A";
 const screenWidth = Math.round(Dimensions.get("window").width);
 
 const AVALABLE_COLOR = "#3CB371";
@@ -24,20 +26,22 @@ const TRANSIENT_COLOR = "#F72";
 const COMPLETED_COLOR = "#0099ff";
 const IS_AVAILABLE = "available";
 const IS_BOOKED = "booked";
-const IS_CANCELED = "canceled";
+const IS_CANCELED = "cancelled";
 const IS_TRANSIENT = "transient";
-const IS_COMPLETED = "completed";
-const NOT_AVAILABLE = "NOT AVAILABLE";
+const IS_COMPLETED = "completed"
+const NOT_AVAILABLE = "NOT AVAILABLE"
 let startDate = 0;
 let endDate = 0;
 const DoctorBooking = ({ navigation, route }) => {
   // let { deptcode } = route.params.item
   const [slotDate, setslotDate] = useState(moment().format("ll"));
+
   const [loading, setLoading] = useState(true);
   const [Doctor, setDoctor] = useState({});
   const [isDatePickerAvailable, setDatePickerAvailable] = useState(false);
-
+  const [familyData, setFamilyData] = useState([]);
   const [slotsData, setSlotsData] = useState([]);
+  const [family_member_id, setFamilyID] = useState("")
 
   const fetchData = async () => {
     const userToken = await AsyncStorage.getItem("userToken");
@@ -50,20 +54,52 @@ const DoctorBooking = ({ navigation, route }) => {
     })
       .then((res) => res.json())
       .then((results) => {
-        console.log(JSON.stringify(results));
-        setLoading(false);
+        setLoading(false)
         if (results.code == 200) {
           setSlotsData(results.data);
         } else {
           Alert.alert(Alert_Title, results.message);
         }
+
+
       })
       .catch((err) => {
-        setLoading(false);
+        setLoading(false)
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
       });
   };
+  const fetchFamilyData = async () => {
+    const userToken = await AsyncStorage.getItem("userToken");
+    let URL = `${BASE_URL}family-members`;
+    console.log(URL)
+    fetch(URL, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: userToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((results) => {
+        console.log("Family data :", JSON.stringify(results.data))
+        if (results.code == 200) {
+          setFamilyData(results.data.members)
+        }
+      })
+      .catch((err) => {
+        Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
+      });
+  };
+  const familyItems = () => {
+    let list = [
+      <Picker.Item label="Self" value={""} key={"self"} />
+    ];
+    familyData.map(item => {
+      list.push(<Picker.Item label={`${item.name} - ${item.relation}`} value={item.id} key={item.id} />)
+    })
 
+    return list
+  }
   const updateStartEndDate = async (sdate) => {
     startDate = moment(sdate).startOf("day").format("x");
     endDate = moment(sdate).endOf("day").format("x");
@@ -75,20 +111,25 @@ const DoctorBooking = ({ navigation, route }) => {
   };
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", async () => {
-      setLoading(true);
+      setLoading(true)
       setDoctor(route.params.item);
       updateStartEndDate(new Date());
+      setFamilyID("")
+      setFamilyID([])
+      fetchFamilyData()
       fetchData();
     });
     return unsubscribe;
   }, [route.params]);
 
   const bookSlot = async (item) => {
-    navigation.navigate("payment", { appointment_id: item.id });
+
+    navigation.navigate("payment", { appointment_id: item.id, family_member_id });
+
+
   };
 
   const slotPressed = (item, index) => {
-    console.log("Slot ", item, index);
     if (item.status == IS_AVAILABLE || item.status == IS_TRANSIENT) {
       Alert.alert(
         "Book your appointment",
@@ -110,43 +151,59 @@ const DoctorBooking = ({ navigation, route }) => {
     }
   };
   const displayBGSlot = (item) => {
-    if (item == IS_BOOKED) {
-      return BOOKED_COLOR;
-    } else if (item == IS_CANCELED) {
-      return CANCELED_COLOR;
-    } else if (item == IS_TRANSIENT) {
-      return TRANSIENT_COLOR;
-    } else if (item == IS_COMPLETED) {
-      return COMPLETED_COLOR;
+    if (item == IS_AVAILABLE) {
+
+      return AVALABLE_COLOR
     }
-    return AVALABLE_COLOR;
+
+
+    return BOOKED_COLOR
+
+
+
+
+    // return item.status.toUpperCase()
+    // if (item == IS_BOOKED) {
+    //   return BOOKED_COLOR;
+    // } else if (item == IS_CANCELED) {
+    //   return CANCELED_COLOR;
+    // }
+    // else if (item == IS_TRANSIENT) {
+    //   return TRANSIENT_COLOR;
+    // }
+    // else if (item == IS_COMPLETED) {
+    //   return COMPLETED_COLOR;
+    // }
+    // return AVALABLE_COLOR;
   };
   const handleDatePicker = (date) => {
     updateStartEndDate(date);
     setDatePickerAvailable(false);
-    setLoading(true);
+    setLoading(true)
     fetchData();
   };
   const statusText = (item) => {
+
     if (item.status == IS_BOOKED) {
       if (item.is_your_slots == false) {
-        return NOT_AVAILABLE;
+        return NOT_AVAILABLE
       }
-    } else if (item.status != IS_AVAILABLE && item.is_your_slots == false) {
-      return NOT_AVAILABLE;
+    }
+    else if (item.status != IS_AVAILABLE && item.is_your_slots == false) {
+      return NOT_AVAILABLE
     }
 
-    return item.status.toUpperCase();
-  };
+    return item.status.toUpperCase()
+  }
   const renderItem = (item, index) => {
-    let statusForSlot = statusText(item);
+    let statusForSlot = statusText(item)
     return (
       <View
         style={{
           width: (screenWidth - 20) / 3,
           aspectRatio: 1.3,
           paddingHorizontal: 5,
-          paddingVertical: 5,
+          paddingVertical: 5
           // justifyContent: "center",
         }}
       >
@@ -159,32 +216,25 @@ const DoctorBooking = ({ navigation, route }) => {
             backgroundColor: displayBGSlot(item.status),
             flex: 1,
 
+
             justifyContent: "center",
           }}
         >
-          <View
-            style={{
-              flex: 0.7,
-              justifyContent: "flex-end",
-            }}
-          >
-            <Text
-              style={{
-                alignSelf: "center",
-                fontSize: 13,
-                color: "#eee",
-              }}
-            >
+          <View style={{
+            flex: 0.7, justifyContent: "flex-end",
+
+          }}>
+            <Text style={{
+              alignSelf: "center", fontSize: 13,
+              color: "#eee"
+            }}>
               {StringFromTime(item.time_millis)}
             </Text>
           </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
+          <View style={{
+            flex: 1, alignItems: "center",
+            justifyContent: "center"
+          }}>
             <Text
               style={{
                 flex: 1,
@@ -192,7 +242,7 @@ const DoctorBooking = ({ navigation, route }) => {
                 fontSize: 14,
                 color: "#eee",
                 marginTop: 6,
-                textAlign: "center",
+                textAlign: "center"
               }}
             >
               {statusForSlot}
@@ -267,28 +317,46 @@ const DoctorBooking = ({ navigation, route }) => {
             fontSize: 15,
             fontWeight: "500",
             flexDirection: "row",
+            marginTop: 5,
+
           }}
           onPress={() => setDatePickerAvailable(true)}
         >
-          <Text style={[styles.headtext, { marginRight: 5 }]}>
+          <Text style={{
+            color: "#08211c",
+            fontSize: 15,
+            fontWeight: "500", marginRight: 5
+          }}>
             Choose Another Date{" "}
           </Text>
           <AntDesign name="calendar" size={20} color="black" />
         </TouchableOpacity>
-        {/* <Text style={styles.headtext}>Consultation Type</Text> */}
-        <View style={styles.typestyle}>
-          {/* <TouchableOpacity activeOpacity={0.95}
-            onPress={() => Alert.alert('Simple Button pressed')} style={styles.consulttype} >
-            <Text style={styles.btntext}>Self</Text>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.95}
-            onPress={() => Alert.alert('Simple Button pressed')} style={styles.consulttype} >
-            <Text style={styles.btntext}>For Family</Text>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.95}
-            onPress={() => Alert.alert('Simple Button pressed')} style={styles.consulttype} >
-            <Text style={styles.btntext}>Offline</Text>
-          </TouchableOpacity> */}
+
+        <View style={{
+          flexDirection: "row", width: "90%",
+          alignItems: "center", marginTop: 5
+        }}>
+          <Text style={{
+            color: "#08211c",
+            fontSize: 15,
+            fontWeight: "500",
+          }}>Consultation Type</Text>
+
+          <Picker
+            selectedValue={family_member_id}
+            style={{
+              height: 30, marginLeft: 10, flex: 1,
+              color: "black",
+            }}
+            onValueChange={(itemValue, itemIndex) => {
+
+              setFamilyID(itemValue)
+            }}
+          >
+            {familyItems()}
+          </Picker>
+
+
         </View>
       </View>
 
@@ -434,6 +502,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
   },
+  hwInput: {
+    borderColor: "#ddd",
+    borderBottomWidth: 3,
+    borderBottomColor: 'grey',
+    padding: 10,
+    fontSize: 18,
+    marginHorizontal: 10,
+
+  },
   SlotDate: {
     color: "#074a44",
     marginBottom: 5,
@@ -535,3 +612,25 @@ const styles = StyleSheet.create({
     height: 50,
   },
 });
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 3,
+    paddingHorizontal: 5,
+    color: "black",
+    fontWeight: "900",
+    // width: 90,
+    // backgroundColor: "#ddd",
+  },
+
+  inputAndroid: {
+    fontSize: 16,
+    fontWeight: "900",
+    paddingVertical: 3,
+    color: "black",
+    // backgroundColor: "#ddd",
+    // width: 150,
+    paddingHorizontal: 5
+  },
+});
+

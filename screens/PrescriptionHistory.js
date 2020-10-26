@@ -75,18 +75,19 @@ export default function PatientHistory({ navigation, route }) {
   const renderItem = (item, index) => {
     console.log("renderItem :", item.appointment_id);
     const advice = item.information.advice;
-    const special_advice = item.information.suggested_investigation;
+    const special_advice = item.information.special_advice;
     const symptoms = item.information.symptoms;
     const findings = item.information.lab_findings;
     const fileString = item.information.file_path;
-    const patientName = item.patient.name ? item.patient.name : NA;
-    const patientWeight = item.patient.weight ? item.patient.weight : NA;
-    const patientAge = item.patient.age ? item.patient.age : NA;
-    const patientHeight = item.patient.height ? item.patient.height : NA;
-    const patientGender = item.patient.gender ? item.patient.gender : NA;
+    const patientName = item.consultant.name ? item.consultant.name : NA;
+    const patientWeight = item.consultant.weight ? item.consultant.weight : NA;
+    const patientAge = item.consultant.age ? item.consultant.age : NA;
+    const patientHeight = item.consultant.height ? item.consultant.height : NA;
+    const patientGender = item.consultant.gender ? item.consultant.gender : NA;
     const suggestedInvestigation = "";
     const appointmentDate = moment(item.created_date).format("ll");
     const Hospital_Name = item.hospital.name;
+
     return (
       <ScrollView
         horizontal={false}
@@ -96,9 +97,10 @@ export default function PatientHistory({ navigation, route }) {
         <View style={styles.presCard}>
           <View style={styles.header}>
             <Text style={styles.Titlehead}>{Hospital_Name}</Text>
-            <Text style={styles.headtext}> {item.doctor.name} </Text>
+            <Text style={styles.headtext}> {item.doctor.name} | {item.doctor.degree} </Text>
+            <Text style={styles.headtext}>{item.doctor.designation}</Text>
             <Text style={styles.headtext}>
-              {item.hospital.place} , {item.hospital.city}{" "}
+              {item.hospital.place} , {item.hospital.city} - {item.hospital.pincode}
             </Text>
           </View>
           <View
@@ -161,7 +163,7 @@ export default function PatientHistory({ navigation, route }) {
                 <Text
                   style={{ color: "black", fontWeight: "900", fontSize: 16 }}
                 >
-                  :{" " + patientAge}
+                  :{" " + patientAge + " Years"}
                 </Text>
               </View>
             </View>
@@ -187,7 +189,7 @@ export default function PatientHistory({ navigation, route }) {
                 <Text
                   style={{ color: "black", fontWeight: "900", fontSize: 16 }}
                 >
-                  :{" " + patientWeight}
+                  :{" " + patientWeight + " Kg"}
                 </Text>
               </View>
               <View
@@ -211,7 +213,7 @@ export default function PatientHistory({ navigation, route }) {
                 <Text
                   style={{ color: "black", fontWeight: "900", fontSize: 16 }}
                 >
-                  :{" " + patientHeight}
+                  :{" " + patientHeight + " cm"}
                 </Text>
               </View>
             </View>
@@ -384,6 +386,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderTopColor: "black",
     borderTopWidth: 2,
+    marginTop: 5
   },
   presbodyLeft: {
     flex: 1,
@@ -401,7 +404,7 @@ const styles = StyleSheet.create({
     height: "100%",
 
     padding: 10,
-    height: 400,
+    height: 350,
   },
   textInput: {
     flex: 1,
@@ -447,7 +450,7 @@ const styles = StyleSheet.create({
 
   Titlehead: {
     color: "white",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "900",
   },
   headtext: {
@@ -543,72 +546,3 @@ const pickerSelectStyles = StyleSheet.create({
   },
 });
 
-const ageItem = () => {
-  let list = [
-    {
-      label: NA,
-      value: NA,
-    },
-  ];
-  let index = 1;
-  while (index <= 125) {
-    list.push({
-      label: `${index}`,
-      value: `${index}`,
-    });
-    index++;
-  }
-  return list;
-};
-const weightItem = () => {
-  let list = [
-    {
-      label: NA,
-      value: NA,
-    },
-  ];
-  let index = 1;
-  while (index <= 200) {
-    list.push({
-      label: `${index}  Kg`,
-      value: `${index}  Kg`,
-    });
-    index++;
-  }
-  return list;
-};
-const heightItem = () => {
-  let list = [
-    {
-      label: NA,
-      value: NA,
-    },
-  ];
-  let index = 30;
-  while (index <= 225) {
-    list.push({
-      label: `${index}  cm`,
-      value: `${index}  cm`,
-    });
-    index++;
-  }
-  return list;
-};
-const genderItem = [
-  {
-    label: "Male",
-    value: "Male",
-  },
-  {
-    label: "Female",
-    value: "Female",
-  },
-  {
-    label: "Other",
-    value: "Other",
-  },
-];
-const retnum = (str) => {
-  var num = str.replace(/[^0-9]/g, "");
-  return parseInt(num, 10);
-};

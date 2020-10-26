@@ -18,6 +18,7 @@ export default function Transaction({ navigation, route }) {
 
   const [item, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const GetTransactiondata = async () => {
     const userToken = await AsyncStorage.getItem("userToken");
     //   console.log(userToken)
@@ -39,6 +40,35 @@ export default function Transaction({ navigation, route }) {
       .catch((err) => {
         setLoading(false);
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
+      });
+  }
+  const LoadMoreGetTransactiondata = async () => {
+    console.log("Load more transaction")
+    setIsLoadingMore(true)
+    const userToken = await AsyncStorage.getItem("userToken");
+    //   console.log(userToken)
+    let offset = 0
+    if (item && item.length > 0) {
+      offset = item.length
+    }
+    fetch(`${BASE_URL}orders?offset=${offset}`, {
+      method: "GET",
+      headers: { Authorization: userToken },
+    })
+      .then((res) => res.json())
+      .then((results) => {
+        console.log("More Orders :", JSON.stringify(results.data))
+        setIsLoadingMore(false)
+        if (results.code == 200) {
+          // setData(results.data);
+          if (item && item.length > 0) {
+
+            setData(item.concat(results.data))
+          }
+        }
+      })
+      .catch((err) => {
+        setIsLoadingMore(false)
       });
   }
   useEffect(() => {
@@ -117,6 +147,13 @@ export default function Transaction({ navigation, route }) {
         }}
         onRefresh={() => GetTransactiondata()}
         refreshing={loading}
+        onEndReachedThreshold={0.4}
+        onEndReached={() => {
+          if (isLoadingMore == false) {
+            LoadMoreGetTransactiondata()
+          }
+
+        }}
         keyExtractor={(item) => item.invoice}
       />
     </View>

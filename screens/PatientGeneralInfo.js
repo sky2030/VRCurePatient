@@ -18,6 +18,68 @@ import * as ImagePicker from "expo-image-picker";
 import * as Permissions from "expo-permissions";
 import AsyncStorage from "@react-native-community/async-storage";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import RNPickerSelect from "react-native-picker-select";
+
+let NA = "N/A";
+
+const retnum = (str) => {
+  var num = str.replace(/[^0-9]/g, "");
+  return parseInt(num, 10);
+};
+
+const genderItem = [
+  {
+    label: NA,
+    value: NA,
+  },
+  {
+    label: "Male",
+    value: "Male",
+  },
+  {
+    label: "Female",
+    value: "Female",
+  },
+  {
+    label: "Other",
+    value: "Other",
+  },
+];
+const weightItem = () => {
+  let list = [
+    {
+      label: NA,
+      value: NA,
+    },
+  ];
+  let index = 1;
+  while (index <= 200) {
+    list.push({
+      label: `${index} Kg`,
+      value: `${index} Kg`,
+    });
+    index++;
+  }
+  return list;
+};
+
+const heightItem = () => {
+  let list = [
+    {
+      label: NA,
+      value: NA,
+    },
+  ];
+  let index = 30;
+  while (index <= 225) {
+    list.push({
+      label: `${index} cm`,
+      value: `${index} cm`,
+    });
+    index++;
+  }
+  return list;
+};
 
 function PatientGeneralInfo({ navigation, route }) {
   const [id, setId] = useState(route.params.data._id);
@@ -29,7 +91,7 @@ function PatientGeneralInfo({ navigation, route }) {
     route.params.data.mothers_name
   );
   const [gender, setgender] = useState(route.params.data.gender);
-  const [dob, setDOB] = useState(route.params.data.dob);
+  const [dob, setDOB] = useState(undefined);
   const [picture, setPicture] = useState(route.params.data.picture);
   const [place, setplace] = useState(route.params.data.place);
   const [city, setcity] = useState(route.params.data.city);
@@ -43,6 +105,7 @@ function PatientGeneralInfo({ navigation, route }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
+      console.log(route.params.data.dob);
       setemail(route.params.data.email);
       setpatient_name(route.params.data.patient_name);
       setmothername(route.params.data.mothers_name);
@@ -54,14 +117,14 @@ function PatientGeneralInfo({ navigation, route }) {
       setstate(route.params.data.state);
       setpincode(route.params.data.pincode);
       setId(route.params.data._id);
-      setweight(route.params.data.weight);
-      setheight(route.params.data.height);
+      setweight(route.params.data.weight + " Kg");
+      setheight(route.params.data.height + " cm");
     });
     return unsubscribe;
   }, [route.params.data]);
 
   const handleDatePicker = (date) => {
-    setDOB(moment(date).format("DD/MM/YYYY"));
+    setDOB(date);
     //updateDOB(date);
     setDatePickerAvailable(false);
   };
@@ -74,9 +137,9 @@ function PatientGeneralInfo({ navigation, route }) {
       patient_name,
       mothers_name,
       gender,
-      dob,
-      weight,
-      height,
+      dob: moment(dob).format("x"),
+      height: `${retnum(height)}`,
+      weight: `${retnum(weight)}`,
       picture,
       place,
       city,
@@ -239,27 +302,44 @@ function PatientGeneralInfo({ navigation, route }) {
               mode="outlined"
               onChangeText={(text) => setmothername(text)}
             />
-            <TextInput
-              label="Gender"
-              style={styles.inputStyle}
-              value={gender}
-              theme={theme}
-              onFocus={() => setenableShift(false)}
-              //keyboardType="number-pad"
-              mode="outlined"
-              onChangeText={(text) => setgender(text)}
-            />
-            <View style={styles.Subtitle}>
+            <View style={{ flexDirection: "row" }}>
               <TextInput
+                label="Gender"
+                style={styles.smallinput}
+                value={gender}
+                theme={theme}
+                onFocus={() => setenableShift(false)}
+                //keyboardType="number-pad"
+                mode="outlined"
+                onChangeText={(text) => setgender(text)}
+              />
+              <View style={styles.droplist}>
+                <RNPickerSelect
+                  placeholder={{}}
+                  items={genderItem}
+                  onValueChange={(value) => {
+                    setgender(value);
+                  }}
+                  style={pickerSelectStyles}
+                  value={gender}
+                  useNativeAndroidPickerStyle={false}
+                />
+              </View>
+
+            </View>
+
+            <View style={styles.Subtitle}>
+              {/* <TextInput
                 label="Date of Birth"
                 style={styles.dobStyle}
-                value={dob}
+                value={moment(dob).format("ll")}
                 theme={theme}
                 onFocus={() => setenableShift(false)}
                 //keyboardType="number-pad"
                 mode="outlined"
                 onChangeText={(text) => setDOB(text)}
-              />
+              /> */}
+              <Text style={{ fontSize: 16 }}> Birthday : {moment(dob).format("ll")} </Text>
               <TouchableOpacity
                 style={{
                   color: "#08211c",
@@ -271,9 +351,7 @@ function PatientGeneralInfo({ navigation, route }) {
                 <AntDesign name="calendar" size={32} color="black" />
               </TouchableOpacity>
             </View>
-
-            <View style={{ flexDirection: "row" }}>
-              <TextInput
+            {/* <TextInput
                 label="Weight"
                 style={styles.smallinput}
                 value={weight}
@@ -282,8 +360,23 @@ function PatientGeneralInfo({ navigation, route }) {
                 //keyboardType="number-pad"
                 mode="outlined"
                 onChangeText={(text) => setweight(text)}
+              /> */}
+            <View style={styles.hwInput}>
+              <Text style={{ fontSize: 16, marginBottom: 10 }}>Weight</Text>
+              <RNPickerSelect
+                placeholder={{}}
+                items={weightItem()}
+                onValueChange={(value) => {
+                  setweight(value);
+                }}
+                style={pickerSelectStyles}
+                value={weight}
+                useNativeAndroidPickerStyle={false}
               />
-              <TextInput
+            </View>
+
+
+            {/* <TextInput
                 label="Height"
                 style={styles.smallinput}
                 value={height}
@@ -292,6 +385,19 @@ function PatientGeneralInfo({ navigation, route }) {
                 //keyboardType="number-pad"
                 mode="outlined"
                 onChangeText={(text) => setheight(text)}
+              /> */}
+
+            <View style={styles.hwInput}>
+              <Text style={{ fontSize: 16, marginBottom: 5 }} >Height</Text>
+              <RNPickerSelect
+                placeholder={{}}
+                items={heightItem()}
+                onValueChange={(value) => {
+                  setheight(value);
+                }}
+                style={pickerSelectStyles}
+                value={height}
+                useNativeAndroidPickerStyle={false}
               />
             </View>
             <TextInput
@@ -399,6 +505,30 @@ const theme = {
     primary: "#006aff",
   },
 };
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 3,
+    paddingHorizontal: 5,
+    color: "black",
+    fontWeight: "900",
+    // width: 90,
+    backgroundColor: "#fff",
+  },
+
+  inputAndroid: {
+    fontSize: 16,
+    fontWeight: "900",
+    paddingVertical: 5,
+    color: "black",
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
+    width: 200,
+    paddingHorizontal: 10
+  },
+});
+
 const styles = StyleSheet.create({
   head: {
     backgroundColor: "#21ada2",
@@ -408,11 +538,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   Subtitle: {
+    borderWidth: 2,
+    borderColor: "#e1e8e3",
+    borderBottomColor: 'grey',
+    padding: 10,
+    marginVertical: 3,
+    width: "90%",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "center",
     flexDirection: "row",
     marginHorizontal: 20,
     borderRadius: 5,
+  },
+  droplist: {
+    marginVertical: 10,
+    flex: 2,
   },
   dobStyle: {
     margin: 2,
@@ -463,11 +603,23 @@ const styles = StyleSheet.create({
   inputStyle: {
     margin: 2,
     width: "90%",
+    height: HEIGHT_ROW
+  },
+  hwInput: {
+    borderWidth: 2,
+    borderColor: "#e1e8e3",
+    borderBottomColor: 'grey',
+    padding: 10,
+    marginVertical: 3,
+    marginHorizontal: 10,
+    width: "90%"
+
   },
   smallinput: {
     marginHorizontal: 20,
     marginVertical: 2,
     flex: 1,
+    height: HEIGHT_ROW
   },
   uploadImage: {
     margin: 5,

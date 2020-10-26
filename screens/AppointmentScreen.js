@@ -37,12 +37,12 @@ const AppointmentScreen = ({ navigation, route }) => {
   let completed_status = "completed"
   let booked_status = "booked"
   useEffect(() => {
-    fetchData();
-    // const unsubscribe = navigation.addListener("focus", async () => {
+    // fetchData();
+    const unsubscribe = navigation.addListener("focus", async () => {
 
-    //   fetchData();
-    // });
-    // return unsubscribe;
+      fetchData();
+    });
+    return unsubscribe;
   }, [route.params]);
 
   const updateStartEndDate = async (sdate) => {
@@ -71,7 +71,7 @@ const AppointmentScreen = ({ navigation, route }) => {
         setLoading(false);
         if (results.code == 200) {
           setAllSlots(results.data)
-          // console.log("Data appointment :", JSON.stringify(results.data))
+          console.log("Data appointment :", JSON.stringify(results.data))
           let list = results.data.filter(item => {
             if (item.status == slotValue)
               return item

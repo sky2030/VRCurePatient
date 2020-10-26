@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, ScrollView, FlatList, Dimensions } from "react-native";
+import { StyleSheet, View, Text, ScrollView, FlatList, Dimensions, Alert } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -56,21 +56,21 @@ export default function SupportScreen({ navigation }) {
           <View style={styles.title8}>
             <Text style={styles.headtext2}>Email Address</Text>
             <Text style={styles.headtext2}>{item.email}</Text>
-            </View>
-            </View>
-            <View style={styles.emergencybody}>
-              <View style={styles.title8}>
+          </View>
+        </View>
+        <View style={styles.emergencybody}>
+          <View style={styles.title8}>
             <Text style={styles.headtext2}>Emergency No</Text>
             <Text style={styles.headtext2}>{item.emergencyNo}</Text>
-            </View>
-            <View style={styles.title8}>
+          </View>
+          <View style={styles.title8}>
             <Text style={styles.headtext2}>Emergency Email</Text>
             <Text style={styles.headtext2}>{item.emergencyDetail}</Text>
-            </View>
-            </View>
-            
-        
-     
+          </View>
+        </View>
+
+
+
       </View>
 
 
@@ -182,11 +182,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   emergencytxt: {
-      color: "white",
+    color: "white",
     fontSize: 15,
     fontWeight: "bold",
   },
- 
+
   headtext2: {
     color: "#4E557C",
     fontSize: 14,
@@ -241,15 +241,15 @@ const styles = StyleSheet.create({
   },
 
   emergencybody: {
-    width:'100%',
-    backgroundColor:"lightgrey",
+    width: '100%',
+    backgroundColor: "lightgrey",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
     paddingBottom: 10,
   },
-   body: {
-     width:'100%',
+  body: {
+    width: '100%',
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",

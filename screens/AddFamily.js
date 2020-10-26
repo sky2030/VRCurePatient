@@ -19,6 +19,24 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 let NA = "N/A";
 
+const genderItem = [
+  {
+    label: NA,
+    value: NA,
+  },
+  {
+    label: "Male",
+    value: "Male",
+  },
+  {
+    label: "Female",
+    value: "Female",
+  },
+  {
+    label: "Other",
+    value: "Other",
+  },
+];
 const weightItem = () => {
   let list = [
     {
@@ -109,6 +127,7 @@ export default function AddFamily({ navigation, route }) {
   const [birth_millis, setbirthdate] = useState(undefined);
   const [height, setheight] = useState("");
   const [weight, setweight] = useState("");
+  const [gender, setGender] = useState("");
   const [isDatePickerAvailable, setDatePickerAvailable] = useState(false);
 
   const handleDatePicker = (date) => {
@@ -122,6 +141,7 @@ export default function AddFamily({ navigation, route }) {
     let payload = {
       name,
       relation,
+      gender,
       birth_millis: moment(birth_millis).format("x"),
       height: `${retnum(height)}`,
       weight: `${retnum(weight)}`,
@@ -144,7 +164,7 @@ export default function AddFamily({ navigation, route }) {
           navigation.navigate("Myfamily");
         } else {
           Alert.alert(Alert_Title, data.message)
-        }        
+        }
       })
       .catch((err) => {
         Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
@@ -155,6 +175,7 @@ export default function AddFamily({ navigation, route }) {
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
 
+      setGender("");
       SetMemberName("");
       setrelation("");
       setbirthdate(undefined);
@@ -197,7 +218,7 @@ export default function AddFamily({ navigation, route }) {
             mode="outlined"
             onChangeText={(text) => SetMemberName(text)}
           />
-         
+
           {/* <TextInput
               style={styles.input}
               placeholder="Birthdate of Family Member"
@@ -206,12 +227,12 @@ export default function AddFamily({ navigation, route }) {
               onChangeText={(text) => setbirthdate(text)}
             />  */}
           <Text style={styles.Inputs}> Date of Birth : {birth_millis != undefined ? moment(birth_millis).format("ll") : ""}</Text>
-            <TouchableOpacity
+          <TouchableOpacity
             style={styles.hwInput}
-              onPress={() => setDatePickerAvailable(true)}
-            >
-              <AntDesign name="calendar" size={45} color="black" />
-            </TouchableOpacity>
+            onPress={() => setDatePickerAvailable(true)}
+          >
+            <AntDesign name="calendar" size={45} color="black" />
+          </TouchableOpacity>
 
           <DateTimePickerModal
             isVisible={isDatePickerAvailable}
@@ -226,7 +247,31 @@ export default function AddFamily({ navigation, route }) {
             mode="outlined"
             onChangeText={(text) => setrelation(text)}
           /> */}
+          <Text
+            style={styles.Inputs}>
 
+            Gender
+                </Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Other gender if Any"
+            mode="outlined"
+            value={gender}
+            onChangeText={(text) => setGender(text)}
+          />
+          <View style={styles.hwInput}>
+            <RNPickerSelect
+              placeholder={{}}
+              items={genderItem}
+              onValueChange={(value) => {
+                setGender(value);
+              }}
+              style={pickerSelectStyles}
+              value={gender}
+              useNativeAndroidPickerStyle={false}
+            />
+          </View>
           <Text
             style={styles.Inputs}>
 
@@ -242,7 +287,7 @@ export default function AddFamily({ navigation, route }) {
               style={pickerSelectStyles}
               value={relation}
               useNativeAndroidPickerStyle={false}
-          />
+            />
           </View>
           <Text style={styles.Inputs}> Height</Text>
           <View style={styles.hwInput}>
@@ -354,6 +399,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginHorizontal: 10,
     marginTop: 20,
+    height: HEIGHT_ROW
   },
   hwInput: {
     borderWidth: 1,
@@ -393,6 +439,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 10,
     borderBottomColor: "black",
+    height: HEIGHT_ROW
   },
 });
 

@@ -7,11 +7,8 @@ import {
   Image,
   ImageBackground,
   StatusBar,
-  Alert,
-  FlatList,
-  Dimensions,
+  Alert, FlatList, Dimensions
 } from "react-native";
-import Header from "../assets/images/Header.png";
 import PageControl from "react-native-page-control";
 
 import AsyncStorage from "@react-native-community/async-storage";
@@ -31,6 +28,7 @@ const HomeScreen = ({ navigation, route }) => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setcurrentPage] = useState(0);
 
+
   const GetProfile = async () => {
     const userToken = await AsyncStorage.getItem("userToken");
     //   console.log(userToken)
@@ -43,6 +41,7 @@ const HomeScreen = ({ navigation, route }) => {
         setLoading(false);
         if (results.code == 200) {
           Setdata(results.data);
+
         } else {
           Alert.alert(Alert_Title, results.message);
         }
@@ -79,34 +78,27 @@ const HomeScreen = ({ navigation, route }) => {
       <TouchableOpacity
         activeOpacity={0.95}
         style={{ width: screenWidth, flexDirection: "row" }}
-        // onPress={() => navigation.navigate("HospitalHome", { item })}
+      // onPress={() => navigation.navigate("HospitalHome", { item })}
       >
         <View>
-          <Image
-            style={{
-              height: 100,
-              width: 150,
-              marginLeft: 20,
-            }}
-            source={{ uri: `${BASE}${item.picture.url}` }}
-          />
+          <Image style={{
+            height: 100, width: 150,
+            marginLeft: 20,
+          }}
+            source={{ uri: `${BASE}${item.picture.url}` }} />
         </View>
         <View style={{ marginLeft: 20, marginRight: 10, flex: 1 }}>
-          <Text
-            numberOfLines={2}
-            style={{
-              color: "black",
-              fontSize: 17,
-              fontWeight: "900",
-            }}
-          >
-            {item.title}{" "}
-          </Text>
+          <Text numberOfLines={2} style={{
+            color: "black",
+            fontSize: 17,
+            fontWeight: "900",
+          }}>{item.title} </Text>
           <Text numberOfLines={4}>{item.description} </Text>
+
         </View>
       </TouchableOpacity>
     );
-  };
+  }
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="#009387" barStyle="light-content" />
@@ -129,7 +121,7 @@ const HomeScreen = ({ navigation, route }) => {
       <View style={styles.header}>
         <ImageBackground
           style={styles.imgBackground}
-          source={Header}
+          source={{ uri: "imagebg" }}
         ></ImageBackground>
       </View>
       <View style={{ marginBottom: 10 }}>
@@ -147,13 +139,7 @@ const HomeScreen = ({ navigation, route }) => {
 
       <View style={styles.CardRows}>
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("Speciality", {
-              item,
-              // hospitalcode,
-              // hospitalName,
-            })
-          }
+          onPress={() => navigation.navigate("Speciality", { item })}
           style={styles.card}
         >
           <View style={{ alignItems: "center" }}>
@@ -163,51 +149,47 @@ const HomeScreen = ({ navigation, route }) => {
             <Text style={styles.cardtext}>Book Doctor</Text>
           </View>
         </TouchableOpacity>
+
       </View>
-      {item != undefined &&
-        item.specialities != undefined &&
-        item.specialities.length > 0 && (
-          <View>
-            <Text
-              style={{
-                color: "black",
-                fontSize: 18,
-                fontWeight: "900",
-                justifyContent: "flex-start",
-                alignItems: "flex-start",
-                paddingLeft: 20,
-              }}
-            >
-              Hospital Specialization{" "}
-            </Text>
-            <FlatList
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              style={{ marginTop: 10 }}
-              data={item.specialities}
-              onMomentumScrollEnd={onScrollEnd}
-              renderItem={({ item }) => {
-                return renderListSpecialization(item);
-              }}
-              keyExtractor={(item) => item.id}
+      {
+        item != undefined && item.specialities != undefined && item.specialities.length > 0 &&
+        <View>
+          <Text style={{
+            color: "black",
+            fontSize: 18,
+            fontWeight: "900",
+            justifyContent: "flex-start",
+            alignItems: "flex-start",
+            paddingLeft: 20,
+          }}>Hospital Specialization </Text>
+          <FlatList
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            style={{ marginTop: 10 }}
+            data={item.specialities}
+            onMomentumScrollEnd={onScrollEnd}
+            renderItem={({ item }) => {
+              return renderListSpecialization(item);
+            }}
+            keyExtractor={(item) => item.id}
+          />
+          {
+            <PageControl
+              style={{ marginHorizontal: 0, marginTop: 10 }}
+              numberOfPages={item.specialities.length}
+              currentPage={currentPage}
+              hidesForSinglePage
+              pageIndicatorTintColor="gray"
+              currentPageIndicatorTintColor="#009387"
+              indicatorStyle={{ borderRadius: 5 }}
+              currentIndicatorStyle={{ borderRadius: 5 }}
+              indicatorSize={{ width: 8, height: 8 }}
+            // onPageIndicatorPress={this.onItemTap}
             />
-            {
-              <PageControl
-                style={{ marginHorizontal: 0, marginTop: 10 }}
-                numberOfPages={item.specialities.length}
-                currentPage={currentPage}
-                hidesForSinglePage
-                pageIndicatorTintColor="gray"
-                currentPageIndicatorTintColor="#009387"
-                indicatorStyle={{ borderRadius: 5 }}
-                currentIndicatorStyle={{ borderRadius: 5 }}
-                indicatorSize={{ width: 8, height: 8 }}
-                // onPageIndicatorPress={this.onItemTap}
-              />
-            }
-          </View>
-        )}
+          }
+        </View>
+      }
 
       <TouchableOpacity
         style={styles.footer}
@@ -329,7 +311,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderRadius: 15,
     borderWidth: 0.2,
-    paddingVertical: 10,
+    paddingVertical: 10
   },
   SpecialityCard: {
     flex: 1,
@@ -346,6 +328,7 @@ const styles = StyleSheet.create({
   },
 
   imgBackground: {
+
     aspectRatio: 1.6,
     shadowOpacity: 0.3,
     shadowOffset: { width: 1, height: 1 },
