@@ -115,7 +115,7 @@ export function DrawerContent(props) {
               )}
               label="Prescriptions"
               onPress={() => {
-                props.navigation.navigate("PrescriptionHistory");
+                props.navigation.navigate("PrescriptionHistory", { appointment_id: undefined });
               }}
             />
             <DrawerItem

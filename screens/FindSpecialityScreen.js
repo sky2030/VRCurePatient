@@ -100,11 +100,11 @@ const FindSpecialityScreen = ({ navigation, route }) => {
       <View style={styles.hospitaltitle}>
         <Text style={styles.hospitaltext}>{hospitalName}</Text>
       </View>
-      <Searchbar
+      {/* <Searchbar
         placeholder="Search Doctor"
         onChangeText={onChangeSearch}
         value={searchQuery}
-      />
+      /> */}
 
       <FlatList
         data={data}

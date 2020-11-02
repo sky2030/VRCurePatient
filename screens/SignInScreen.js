@@ -12,19 +12,50 @@ import {
 import * as Animatable from "react-native-animatable";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Collapse,
+  CollapseHeader,
+  CollapseBody,
+} from "accordion-collapse-react-native";
 import { AuthContext } from "../components/context";
 //import Users from '../model/users';
 const SignInScreen = ({ navigation }) => {
   const [data, setData] = useState({
     username: "",
     password: "",
+    email: "",
     check_textInputChange: false,
+    check_emailInputChange: false,
     secureTextEntry: true,
     isValidUser: true,
+    isValidEmail: true,
     isValidPassword: true,
   });
 
   const { signIn } = useContext(AuthContext);
+
+  const EmailInputChange = (val) => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(val) === false) {
+      setData({
+        ...data,
+        email: val,
+        check_emailInputChange: false,
+        isValidEmail: false,
+      });
+      return false;
+    }
+    else {
+      setData({
+        ...data,
+        email: val,
+        check_emailInputChange: true,
+        isValidEmail: true,
+      });
+    }
+
+  };
 
   const textInputChange = (val) => {
     if (val.trim().length == 10) {
@@ -80,6 +111,74 @@ const SignInScreen = ({ navigation }) => {
       });
     }
   };
+
+  const handleValidEmail = (val) => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(val) === false) {
+      setData({
+        ...data,
+        isValidEmail: false,
+      });
+      console.log("Email is Not Correct");
+      return false;
+    } else {
+      setData({
+        ...data,
+        isValidEmail: true,
+      });
+      console.log("Email is Correct");
+      return true;
+    }
+
+  };
+
+  const validateEmail = (text) => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(text) === false) {
+      console.log("Email is Not Correct");
+      return false;
+    } else {
+      console.log("Email is Correct");
+      return true;
+    }
+  };
+
+  const EmailHandle = (email) => {
+    if (email.length == 0) {
+      Alert.alert(
+        "Wrong Input!",
+        "Email Address field cannot be empty.",
+        [{ text: "Okay" }]
+      );
+      return;
+    }
+    if (validateEmail(email) == false) {
+      Alert.alert("Wrong Input!", "Enter valid Email ID", [{ text: "Okay" }]);
+      return;
+    }
+    let payload = {
+      email,
+    };
+    console.log("payload :", payload);
+    fetch(`${BASE_URL}forget-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(JSON.stringify(data));
+        Alert.alert(Alert_Title, data.message);
+        if (data.code == 200) {
+          Alert.alert(Alert_Title, " Your Password has been sent to your Email Address");
+        }
+      })
+      .catch((e) => {
+        Alert.alert(Alert_Title, SOMETHING_WENT_WRONG);
+      });
+  }
 
   const loginHandle = (username, password) => {
     // const foundUser = Users.filter( item => {
@@ -174,11 +273,69 @@ const SignInScreen = ({ navigation }) => {
           </Animatable.View>
         )}
 
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Text style={{ color: "#009387", marginTop: 15 }}>
             Forgot password?
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+        <Collapse>
+          <CollapseHeader>
+            <Text style={{ color: "#009387", marginTop: 15 }}>
+              Forgot password?
+          </Text>
+          </CollapseHeader>
+          <CollapseBody>
+            <View style={styles.action}>
+              <MaterialIcons name="email" size={20} color="#05375a" />
+
+              <TextInput
+                placeholder="Enter your email address"
+                style={styles.textInput}
+                autoCapitalize="none"
+                onChangeText={(val) => EmailInputChange(val)}
+                onEndEditing={(e) => handleValidEmail(e.nativeEvent.text)}
+              />
+              {data.check_emailInputChange ? (
+                <Animatable.View animation="bounceIn">
+                  <Feather name="check-circle" color="green" size={20} />
+                </Animatable.View>
+              ) : null}
+            </View>
+            {data.isValidEmail ? null : (
+              <Animatable.View animation="fadeInLeft" duration={500}>
+                <Text style={styles.errorMsg}>
+                  please enter a valid Email address
+            </Text>
+              </Animatable.View>
+            )}
+            <TouchableOpacity
+              style={[
+                styles.signIn,
+                {
+                  borderColor: "#009387",
+                  backgroundColor: "#009387",
+                  borderWidth: 1,
+                  marginTop: 15,
+                },
+              ]}
+              onPress={() => {
+                EmailHandle(data.email);
+              }}
+            >
+              <Text
+                style={[
+                  styles.textSign,
+                  {
+                    color: "#fff",
+                  },
+                ]}
+              >
+                Sent New Password
+            </Text>
+            </TouchableOpacity>
+          </CollapseBody>
+        </Collapse>
+
         <View style={styles.button}>
           <TouchableOpacity
             style={[

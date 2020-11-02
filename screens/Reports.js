@@ -1,3 +1,8 @@
+/**
+ * Reports
+ * @ Mi-Xlab Anoop
+ */
+
 import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
@@ -247,11 +252,13 @@ export default function ReportRepo({ navigation, route }) {
       <TouchableOpacity
         onPress={() => navigation.navigate("AddReport", { appointment_id, report: undefined })}
         style={{
-          position: "absolute", right: 30, bottom: 130,
-          backgroundColor: "#009387", padding: 10, borderRadius: 3
+          position: "absolute", right: 20, bottom: 60,
+          borderRadius: 3,
+
         }}
       >
-        <AntDesign name="addfile" size={24} color="white" />
+        <MaterialIcons name="note-add" size={45} color="#940d2f" />
+
       </TouchableOpacity>
     </View>
   );

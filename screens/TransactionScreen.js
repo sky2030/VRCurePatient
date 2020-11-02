@@ -1,3 +1,8 @@
+
+/**
+ * Transaction
+ * @ Mi-Xlab Anoop
+ */
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
@@ -202,7 +207,7 @@ const styles = StyleSheet.create({
   headtext: {
     color: "#2E76B6",
     fontSize: 24,
-    fontWeight: "900",
+    fontWeight: "500",
     marginBottom: 20,
     marginTop: 10,
     borderColor: "#2E76B6",
@@ -213,7 +218,7 @@ const styles = StyleSheet.create({
   headtext1: {
     color: "#2F504C",
     fontSize: 17,
-    fontWeight: "900",
+    fontWeight: "500",
     alignSelf: "center",
   },
   btntext: {
@@ -224,11 +229,11 @@ const styles = StyleSheet.create({
   headtext2: {
     color: "#4E557C",
     marginTop: 5,
-    fontWeight: "900",
+    fontWeight: "500",
   },
   InvoiceNo: {
     color: PRIMARY_COLOR,
-    fontWeight: "900",
+    fontWeight: "500",
     fontSize: 16,
     marginLeft: 10,
     marginBottom: 5
@@ -236,7 +241,7 @@ const styles = StyleSheet.create({
   header6: {
     color: "green",
 
-    fontWeight: "900",
+    fontWeight: "500",
     marginBottom: 2,
     marginTop: 8,
     marginLeft: 2,
@@ -244,7 +249,7 @@ const styles = StyleSheet.create({
   headtext3: {
     color: "#4E557C",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 70,
@@ -253,7 +258,7 @@ const styles = StyleSheet.create({
   headtext4: {
     color: "#4E557C",
 
-    fontWeight: "900",
+    fontWeight: "500",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 70,
@@ -262,7 +267,7 @@ const styles = StyleSheet.create({
     color: "black",
     backgroundColor: "#EEF5F4",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
   },
   card: {
     borderRadius: 4,
@@ -332,7 +337,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "center",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
     marginLeft: 15,
   },
   baseText1: {
@@ -341,7 +346,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     justifyContent: "center",
     fontSize: 18,
-    fontWeight: "900",
+    fontWeight: "500",
   },
   title1: {
     flexDirection: "row",
@@ -404,7 +409,7 @@ const styles = StyleSheet.create({
     color: "white",
     backgroundColor: "#192161",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
     alignItems: "center",
     justifyContent: "center",
     width: "90%",
@@ -421,7 +426,7 @@ const styles = StyleSheet.create({
   header2: {
     color: "#4E557C",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
     marginBottom: 10,
     marginRight: 10,
     alignItems: "flex-start",
@@ -430,28 +435,28 @@ const styles = StyleSheet.create({
   header3: {
     color: "#4E557C",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
     marginBottom: 2,
     marginTop: 10,
   },
   header4: {
     color: "#4E557C",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
     marginRight: 70,
     marginTop: 10,
   },
   header5: {
     color: "green",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
     marginBottom: 2,
     marginTop: 10,
   },
   headtext6: {
     color: "blue",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
     marginBottom: 2,
     marginTop: 10,
   },
@@ -475,7 +480,7 @@ const styles = StyleSheet.create({
     padding: 5,
     color: "#fff",
     fontSize: 22,
-    fontWeight: "900",
+    fontWeight: "500",
     flexDirection: "row",
     borderRadius: 5,
     height: 25,

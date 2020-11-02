@@ -1,3 +1,8 @@
+
+/**
+ * Payment
+ * @ Mi-Xlab Anoop
+ */
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,

@@ -1,3 +1,8 @@
+/**
+ * Prescription History
+ * @ Mi-Xlab Anoop
+ */
+
 import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
@@ -28,6 +33,7 @@ export default function PatientHistory({ navigation, route }) {
 
   const fetchData = async (appointment_id) => {
     const userToken = await AsyncStorage.getItem("userToken");
+    console.log(userToken)
     let URL = `${BASE_URL}prescription`;
     if (appointment_id) {
       URL = `${URL}?a_id=${appointment_id}`;
@@ -74,11 +80,11 @@ export default function PatientHistory({ navigation, route }) {
 
   const renderItem = (item, index) => {
     console.log("renderItem :", item.appointment_id);
-    const advice = item.information.advice;
-    const special_advice = item.information.special_advice;
-    const symptoms = item.information.symptoms;
-    const findings = item.information.lab_findings;
-    const fileString = item.information.file_path;
+    const advice = item.information == undefined ? "" : item.information.advice;
+    const special_advice = item.information == undefined ? "" : item.information.special_advice;
+    const symptoms = item.information == undefined ? "" : item.information.symptoms;
+    const findings = item.information == undefined ? "" : item.information.lab_findings;
+    const fileString = item.information == undefined ? "" : item.information.file_path;
     const patientName = item.consultant.name ? item.consultant.name : NA;
     const patientWeight = item.consultant.weight ? item.consultant.weight : NA;
     const patientAge = item.consultant.age ? item.consultant.age : NA;
@@ -112,7 +118,7 @@ export default function PatientHistory({ navigation, route }) {
               marginBottom: 5,
             }}
           >
-            <Text style={{ color: "black", fontWeight: "900", fontSize: 18 }}>
+            <Text style={{ color: "black", fontWeight: "500", fontSize: 18 }}>
               Patient Name :{" " + patientName}
             </Text>
           </View>
@@ -129,7 +135,7 @@ export default function PatientHistory({ navigation, route }) {
                 <Text
                   style={{
                     color: "black",
-                    fontWeight: "900",
+                    fontWeight: "500",
                     fontSize: 16,
                     width: 70,
                   }}
@@ -137,7 +143,7 @@ export default function PatientHistory({ navigation, route }) {
                   Gender
                 </Text>
                 <Text
-                  style={{ color: "black", fontWeight: "900", fontSize: 16 }}
+                  style={{ color: "black", fontWeight: "500", fontSize: 16 }}
                 >
                   :{" " + patientGender}
                 </Text>
@@ -153,7 +159,7 @@ export default function PatientHistory({ navigation, route }) {
                 <Text
                   style={{
                     color: "black",
-                    fontWeight: "900",
+                    fontWeight: "500",
                     fontSize: 16,
                     width: 70,
                   }}
@@ -161,7 +167,7 @@ export default function PatientHistory({ navigation, route }) {
                   Age
                 </Text>
                 <Text
-                  style={{ color: "black", fontWeight: "900", fontSize: 16 }}
+                  style={{ color: "black", fontWeight: "500", fontSize: 16 }}
                 >
                   :{" " + patientAge + " Years"}
                 </Text>
@@ -179,7 +185,7 @@ export default function PatientHistory({ navigation, route }) {
                 <Text
                   style={{
                     color: "black",
-                    fontWeight: "900",
+                    fontWeight: "500",
                     fontSize: 16,
                     width: 70,
                   }}
@@ -187,7 +193,7 @@ export default function PatientHistory({ navigation, route }) {
                   Weight
                 </Text>
                 <Text
-                  style={{ color: "black", fontWeight: "900", fontSize: 16 }}
+                  style={{ color: "black", fontWeight: "500", fontSize: 16 }}
                 >
                   :{" " + patientWeight + " Kg"}
                 </Text>
@@ -203,7 +209,7 @@ export default function PatientHistory({ navigation, route }) {
                 <Text
                   style={{
                     color: "black",
-                    fontWeight: "900",
+                    fontWeight: "500",
                     fontSize: 16,
                     width: 70,
                   }}
@@ -211,7 +217,7 @@ export default function PatientHistory({ navigation, route }) {
                   Height
                 </Text>
                 <Text
-                  style={{ color: "black", fontWeight: "900", fontSize: 16 }}
+                  style={{ color: "black", fontWeight: "500", fontSize: 16 }}
                 >
                   :{" " + patientHeight + " cm"}
                 </Text>
@@ -241,17 +247,18 @@ export default function PatientHistory({ navigation, route }) {
             <View style={{ flexDirection: "row", marginTop: 5 }}>
               <Text style={styles.date}>Appointment Date</Text>
               <Text>{appointmentDate}</Text>
-              <Text style={{ marginLeft: 20, fontWeight: "900" }}>
+              <Text style={{ marginLeft: 20, fontWeight: "500" }}>
                 Signature
               </Text>
             </View>
           </View>
         </View>
-        {fileString.length > 0 && (
+        {fileString != undefined && fileString.length > 0 && (
           <View>
             <Image
               source={{ uri: fileString }}
-              style={{ flex: 1, aspectRatio: 0.4, marginBottom: 10 }}
+              style={{ aspectRatio: 0.4, marginBottom: 10 }}
+              resizeMode={"contain"}
             />
           </View>
         )}
@@ -397,7 +404,7 @@ const styles = StyleSheet.create({
   },
   lefttext: {
     fontSize: 13,
-    fontWeight: "900",
+    fontWeight: "500",
   },
   presbodyRight: {
     flex: 2,
@@ -429,7 +436,7 @@ const styles = StyleSheet.create({
   date: {
     color: "#000",
     fontSize: 14,
-    fontWeight: "900",
+    fontWeight: "500",
     marginHorizontal: 5,
   },
 
@@ -451,12 +458,12 @@ const styles = StyleSheet.create({
   Titlehead: {
     color: "white",
     fontSize: 20,
-    fontWeight: "900",
+    fontWeight: "500",
   },
   headtext: {
     color: "white",
     fontSize: 15,
-    fontWeight: "900",
+    fontWeight: "500",
   },
 
   header: {
@@ -488,7 +495,7 @@ const styles = StyleSheet.create({
   infotext: {
     color: "black",
     // fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "500",
     paddingVertical: 5,
   },
   whitebold: {
@@ -516,7 +523,7 @@ const styles = StyleSheet.create({
     padding: 5,
     color: "#fff",
     fontSize: 22,
-    fontWeight: "900",
+    fontWeight: "500",
     flexDirection: "row",
     borderRadius: 5,
     height: 25,
@@ -532,13 +539,13 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 5,
     color: "black",
-    fontWeight: "900",
+    fontWeight: "500",
     // width: 90,
     backgroundColor: "#fff",
   },
   inputAndroid: {
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "500",
     paddingVertical: 3,
     color: "black",
     backgroundColor: "#fff",

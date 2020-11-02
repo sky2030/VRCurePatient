@@ -1,3 +1,7 @@
+/**
+ * List of appointments
+ * @ Mi-Xlab Anoop
+ */
 import React, { useState, useEffect } from "react";
 
 import {
@@ -21,8 +25,8 @@ import { TextInput, Button } from "react-native-paper";
 import moment from "moment-timezone";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { AntDesign } from "@expo/vector-icons";
-import { Picker } from '@react-native-community/picker';
-
+import Picker from 'react-native-picker-select';
+import { Chevron } from 'react-native-shapes';
 const AppointmentScreen = ({ navigation, route }) => {
   let startDate = moment().startOf("day").format("x");
   let endDate = moment().endOf("day").format("x");
@@ -139,7 +143,7 @@ const AppointmentScreen = ({ navigation, route }) => {
           <Text style={{
             color: "white",
             // marginVertical: 5,
-            fontWeight: "900",
+            fontWeight: "500",
             textAlign: "center",
             alignSelf: "center",
             fontSize: 16
@@ -240,15 +244,13 @@ const AppointmentScreen = ({ navigation, route }) => {
       {
 
         <View style={{
-          flexDirection: "row", alignSelf: "center", marginBottom: 20
-
-
+          flexDirection: "row", alignSelf: "center", marginBottom: 20,
         }}>
 
           <TouchableOpacity
             activeOpacity={0.8}
             style={{
-              height: 50, width: 150,
+              width: 150,
               justifyContent: "center"
             }}
             onPress={() => setDatePickerAvailable(true)}
@@ -258,14 +260,29 @@ const AppointmentScreen = ({ navigation, route }) => {
             </Text>
 
           </TouchableOpacity>
-          <Picker
-            selectedValue={slotValue}
-            style={{
-              height: 50, width: 150, marginLeft: 20,
-              color: "black"
-            }}
-            onValueChange={(itemValue, itemIndex) => {
 
+
+          <Picker
+            style={{
+              inputAndroid: {
+                fontSize: 16,
+                paddingHorizontal: 10,
+                color: 'black',
+                paddingRight: 30, //
+              },
+              inputIOS: {
+                fontSize: 16,
+                paddingHorizontal: 10,
+                color: 'black',
+                paddingRight: 30, //
+              },
+              iconContainer: {
+                paddingVertical: 20,
+              },
+            }}
+            placeholder={{}}
+            useNativeAndroidPickerStyle={false}
+            onValueChange={(itemValue) => {
               setSlotValue(itemValue)
               let list = allSlots.filter(item => {
                 if (item.status == itemValue)
@@ -273,11 +290,14 @@ const AppointmentScreen = ({ navigation, route }) => {
               })
               setAppointmentList(list);
             }}
-          >
-            <Picker.Item label="Upcoming" value={booked_status} />
-            <Picker.Item label="Completed" value={completed_status} />
-          </Picker>
-
+            Icon={() => {
+              return <Chevron size={1.5} color="gray" />;
+            }}
+            items={[
+              { label: 'Upcoming', value: 'booked' },
+              { label: 'Completed', value: 'completed' },
+            ]}
+          />
 
           <DateTimePickerModal
             isVisible={isDatePickerAvailable}
@@ -333,7 +353,7 @@ const styles = StyleSheet.create({
   },
   toptext: {
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "500",
     marginTop: 5,
   },
   head: {
@@ -346,7 +366,7 @@ const styles = StyleSheet.create({
   whitebold: {
     color: "white",
     // marginVertical: 5,
-    fontWeight: "900",
+    fontWeight: "500",
     textAlign: "center",
     alignSelf: "center",
     fontSize: 14,
@@ -357,7 +377,7 @@ const styles = StyleSheet.create({
   cardtext: {
     color: "#4E557C",
     fontSize: 14,
-    fontWeight: "900",
+    fontWeight: "500",
     marginBottom: 2,
     marginTop: 8,
     marginLeft: 2,
@@ -473,5 +493,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 10,
+  },
+});
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    height: 50,
+    // paddingVertical: 12,
+    paddingHorizontal: 10,
+    color: 'black',
+
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    height: 50,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
 });

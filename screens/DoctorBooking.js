@@ -11,11 +11,12 @@ import {
   Dimensions,
 } from "react-native";
 import moment from "moment-timezone";
-import { Picker } from '@react-native-community/picker';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import AsyncStorage from "@react-native-community/async-storage";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import Picker from 'react-native-picker-select';
+import { Chevron } from 'react-native-shapes';
 let NA = "N/A";
 const screenWidth = Math.round(Dimensions.get("window").width);
 
@@ -91,11 +92,9 @@ const DoctorBooking = ({ navigation, route }) => {
       });
   };
   const familyItems = () => {
-    let list = [
-      <Picker.Item label="Self" value={""} key={"self"} />
-    ];
+    let list = [{ label: 'Self', value: "", key: "self" }];
     familyData.map(item => {
-      list.push(<Picker.Item label={`${item.name} - ${item.relation}`} value={item.id} key={item.id} />)
+      list.push({ label: `${item.name} - ${item.relation}`, value: item.id, key: item.id })
     })
 
     return list
@@ -115,7 +114,6 @@ const DoctorBooking = ({ navigation, route }) => {
       setDoctor(route.params.item);
       updateStartEndDate(new Date());
       setFamilyID("")
-      setFamilyID([])
       fetchFamilyData()
       fetchData();
     });
@@ -334,7 +332,7 @@ const DoctorBooking = ({ navigation, route }) => {
 
         <View style={{
           flexDirection: "row", width: "90%",
-          alignItems: "center", marginTop: 5
+          alignItems: "center", marginTop: 5,
         }}>
           <Text style={{
             color: "#08211c",
@@ -343,18 +341,39 @@ const DoctorBooking = ({ navigation, route }) => {
           }}>Consultation Type</Text>
 
           <Picker
-            selectedValue={family_member_id}
+            // selectedValue={family_member_id}
             style={{
-              height: 30, marginLeft: 10, flex: 1,
-              color: "black",
+              inputAndroid: {
+                fontSize: 16,
+                paddingHorizontal: 10,
+                color: 'black',
+                paddingRight: 30, //
+              },
+              inputIOS: {
+                fontSize: 16,
+                paddingHorizontal: 10,
+                color: 'black',
+                paddingRight: 30, //
+              },
+              iconContainer: {
+                paddingVertical: 10,
+              },
             }}
-            onValueChange={(itemValue, itemIndex) => {
+            placeholder={{}}
+            Icon={() => {
+              return <Chevron size={1.5} color="gray" />;
+            }}
+            placeholder={{}}
+            useNativeAndroidPickerStyle={false}
+            onValueChange={(itemValue) => {
 
               setFamilyID(itemValue)
             }}
-          >
-            {familyItems()}
-          </Picker>
+
+            items={familyItems()}
+          />
+
+
 
 
         </View>
@@ -615,22 +634,18 @@ const styles = StyleSheet.create({
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     fontSize: 16,
-    paddingVertical: 3,
-    paddingHorizontal: 5,
-    color: "black",
-    fontWeight: "900",
-    // width: 90,
-    // backgroundColor: "#ddd",
+    height: 50,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
-
   inputAndroid: {
     fontSize: 16,
-    fontWeight: "900",
-    paddingVertical: 3,
-    color: "black",
-    // backgroundColor: "#ddd",
-    // width: 150,
-    paddingHorizontal: 5
+    height: 50,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: 'black',
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
 });
-

@@ -91,7 +91,7 @@ const HomeScreen = ({ navigation, route }) => {
           <Text numberOfLines={2} style={{
             color: "black",
             fontSize: 17,
-            fontWeight: "900",
+            fontWeight: "500",
           }}>{item.title} </Text>
           <Text numberOfLines={4}>{item.description} </Text>
 
@@ -157,7 +157,7 @@ const HomeScreen = ({ navigation, route }) => {
           <Text style={{
             color: "black",
             fontSize: 18,
-            fontWeight: "900",
+            fontWeight: "500",
             justifyContent: "flex-start",
             alignItems: "flex-start",
             paddingLeft: 20,
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   PatientName: {
     color: "#0b635c",
     fontSize: 23,
-    fontWeight: "900",
+    fontWeight: "500",
     justifyContent: "flex-start",
     alignItems: "flex-start",
     fontStyle: "italic",
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   intro: {
     color: "black",
     fontSize: 20,
-    fontWeight: "900",
+    fontWeight: "500",
     fontStyle: "italic",
     justifyContent: "flex-start",
     alignItems: "flex-start",
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     color: "black",
     marginTop: 5,
     fontSize: 20,
-    fontWeight: "900",
+    fontWeight: "500",
     fontStyle: "italic",
     justifyContent: "flex-start",
     alignItems: "flex-start",
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   cardtext: {
     color: "black",
     fontSize: 20,
-    fontWeight: "900",
+    fontWeight: "500",
     justifyContent: "center",
     alignItems: "center",
   },

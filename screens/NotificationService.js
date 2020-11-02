@@ -1,3 +1,8 @@
+
+/**
+ * Notification Service
+ * @ Mi-Xlab Anoop
+ */
 import PushNotification from "react-native-push-notification";
 import PushNotificationIOS from "@react-native-community/push-notification-ios";
 
@@ -24,6 +29,7 @@ class NotificationService {
     if (notification.userInteraction == true) {
       console.log("Notification Opened:" + JSON.stringify(notification));
     }
+    this.finishNotificationresult(notification)
   };
   onRegister(token) {
     console.log("Device Token :", token)

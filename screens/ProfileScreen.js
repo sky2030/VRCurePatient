@@ -82,8 +82,10 @@ const ProfileScreen = ({ navigation }) => {
             <View
               style={{
                 flexDirection: "row",
-                width: "98%",
-                marginLeft: 30,
+                paddingHorizontal: 10,
+                width: "100%",
+                alignSelf: "center",
+                justifyContent: "center",
               }}
             >
               <View
@@ -98,7 +100,7 @@ const ProfileScreen = ({ navigation }) => {
                   style={{
                     color: "#000",
                     fontSize: 16,
-                    fontWeight: "900",
+                    fontWeight: "500",
                     marginLeft: 6,
                   }}
                 >
@@ -119,7 +121,7 @@ const ProfileScreen = ({ navigation }) => {
                     fontSize: 16,
                     marginLeft: 6,
                     marginRight: 10,
-                    fontWeight: "900",
+                    fontWeight: "500",
                     marginRight: 20,
                   }}
                 >
@@ -130,8 +132,9 @@ const ProfileScreen = ({ navigation }) => {
             <View
               style={{
                 flexDirection: "row",
-                width: "98%",
-                marginLeft: 30,
+                width: "100%",
+                paddingHorizontal: 10,
+                alignSelf: "center",
               }}
             >
               <View
@@ -148,7 +151,7 @@ const ProfileScreen = ({ navigation }) => {
                     color: "#000",
                     fontSize: 16,
                     marginLeft: 6,
-                    fontWeight: "900",
+                    fontWeight: "500",
                   }}
                 >
                   {data.city}
@@ -168,7 +171,7 @@ const ProfileScreen = ({ navigation }) => {
                     color: "#000",
                     fontSize: 16,
                     marginLeft: 6,
-                    fontWeight: "900",
+                    fontWeight: "500",
                   }}
                 >
                   {data.mothers_name}
@@ -328,7 +331,7 @@ const styles = StyleSheet.create({
     color: "#020A0F",
 
     fontSize: 25,
-    fontWeight: "900",
+    fontWeight: "500",
     justifyContent: "flex-start",
     alignItems: "flex-start",
   },
@@ -336,7 +339,7 @@ const styles = StyleSheet.create({
     color: "black",
     marginVertical: 5,
     fontSize: 17,
-    fontWeight: "900",
+    fontWeight: "500",
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 10,
@@ -346,7 +349,7 @@ const styles = StyleSheet.create({
     color: "#000",
     marginBottom: 5,
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "500",
     justifyContent: "center",
     alignSelf: "center",
     marginLeft: 40,
@@ -355,7 +358,7 @@ const styles = StyleSheet.create({
     color: "#000",
     marginBottom: 5,
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "500",
     justifyContent: "center",
     alignSelf: "center",
     marginRight: 30,
@@ -364,7 +367,7 @@ const styles = StyleSheet.create({
     color: "#000",
     marginBottom: 5,
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "500",
     justifyContent: "center",
     alignSelf: "center",
     marginLeft: 85,
@@ -381,7 +384,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    // padding: 20,
     width: "95%",
     height: 50,
     flexDirection: "row",

@@ -335,14 +335,14 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 5,
     color: "black",
-    fontWeight: "900",
+    fontWeight: "500",
     // width: 90,
     backgroundColor: "#ddd",
   },
 
   inputAndroid: {
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "500",
     paddingVertical: 3,
     color: "black",
     backgroundColor: "#ddd",
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   Inputs: {
     fontSize: 18,
-    fontWeight: "900",
+    fontWeight: "500",
     marginLeft: 10,
     marginVertical: 10
   },
